@@ -1,0 +1,10 @@
+ver codigo do sidney
+	- ver o robot e os sensores que usa
+
+
+### TRABALHO SEGUINTE - DEPOIS DE TERMINAR GRIDWORLD
+	- rede neuronal simples para resolver problema da localização
+	- input: info dos sensores (posiçao inicial, velocidade das rodas e sensores)
+	- output: postura do robot (coords x,y e angulo teta)
+
+	- converter distancias (sensores no webots nao leem distancias em centimetros ver para converter)

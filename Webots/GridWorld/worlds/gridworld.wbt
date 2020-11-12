@@ -1,0 +1,59 @@
+#VRML_SIM R2020b utf8
+WorldInfo {
+  coordinateSystem "NUE"
+}
+Viewpoint {
+  orientation -0.5814223553682741 -0.8128800075026749 -0.034265698306902626 0.2484910110031248
+  position 0.33033027239568585 0.4719713512524572 1.3640805761273387
+}
+TexturedBackground {
+}
+TexturedBackgroundLight {
+}
+RectangleArena {
+  floorSize 2 2
+  floorTileSize 0.4 0.4
+  floorAppearance Parquetry {
+    type "light strip"
+    IBLStrength 0
+  }
+  wallHeight 0.05
+}
+Khepera4 {
+  translation -0.9 0 0.9
+}
+Wall {
+  translation 0 0 0.27
+  rotation 1 0 0 0
+  size 0.6 0.05 0.02
+}
+Wall {
+  translation -0.29 0 -0.04
+  rotation 1 0 0 0
+  name "wall(2)"
+  size 0.6 0.05 0.02
+}
+Wall {
+  translation -0.29 0 0.12
+  rotation 0 1 0 -1.5707953071795862
+  name "wall(1)"
+  size 0.3 0.05 0.02
+}
+Wall {
+  translation 0.3 0 0.41
+  rotation 0 1 0 -1.5707953071795862
+  name "wall(3)"
+  size 0.3 0.05 0.02
+}
+Wall {
+  translation -1.73334e-07 0 -0.29
+  rotation 0 1 0 -1.5707953071795862
+  name "wall(4)"
+  size 0.5 0.05 0.02
+}
+Wall {
+  translation 0.91 -0.01 -0.88
+  rotation 0 1 0 -1.5707953071795862
+  name "wall(5)"
+  size 0.2 0.01 0.2
+}
