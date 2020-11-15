@@ -204,11 +204,11 @@ class Agent():
 
     def reward(self, pos, old_pos=None):
         if pos == self.goal:
-            return 50       # win reward
+            return 100       # win reward
         elif tuple(pos) == old_pos:
-            return -50      # agent hit a wall(not drawn on canvas) or obstacle
+            return -100      # agent hit a wall(not drawn on canvas) or obstacle
         else:
-            return -10        # living penalty
+            return -1        # living penalty
 
     # choose the best action (the one with highest q_value) or a random one (exploitation and exploration)
     # https://towardsdatascience.com/simple-reinforcement-learning-q-learning-fcddc4b6fe56
