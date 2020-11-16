@@ -16,7 +16,7 @@ class Game():
         self.height = 50*self.r
         
         self.root = tk.Tk()
-        # Create canvas (top left corner is (0,0) bottom right corner is (height,widht))
+        # Create canvas (top left corner is (0,0) bottom right corner is (width,height))
         self.canvas = tk.Canvas(self.root, height=self.height, width=self.width, bg='white')
         self.canvas.pack(fill=tk.BOTH, expand=True)
         
@@ -29,13 +29,6 @@ class Game():
         # Initial Agent Position (Bottom Left Corner)
         self.initial_pos = [0,50*(self.r-1)]
         self.agent_pos = self.initial_pos.copy()
-
-        # make corner positions unavailable (used for full map exploration)
-        self.availablePos.remove(self.initial_pos)
-        self.availablePos.remove([0,0])
-        self.availablePos.remove([50*(self.col-1),0])
-        self.availablePos.remove([50*(self.col-1),50*(self.r-1)])
-
 
         self.loadImages()
         self.drawGrid()
@@ -73,12 +66,12 @@ class Game():
     def drawGoal(self, event):
         topX = event.x//50*50
         topY = event.y//50*50
-        if len(self.winPos) == 0:   
+        if len(self.winPos) == 0 and [topX, topY] != self.initial_pos:   
             self.canvas.create_image(topX,topY, image=self.vic, anchor='nw', tags="goalPos")
             self.winPos.append(topX)
             self.winPos.append(topY)
         else:
-            if [topX, topY] in self.availablePos:
+            if [topX, topY] in self.availablePos and [topX, topY] != self.initial_pos:
                 self.availablePos.append([int(x) for x in self.canvas.coords("goalPos")])
                 self.canvas.delete("goalPos")
                 self.canvas.create_image(topX,topY, image=self.vic, anchor='nw', tags="goalPos")
@@ -90,7 +83,7 @@ class Game():
     def drawObstacles(self, event):        
         topX = event.x//50*50
         topY = event.y//50*50
-        if [topX, topY] in self.availablePos:
+        if [topX, topY] in self.availablePos and [topX, topY] != self.initial_pos:
             self.obs.append([topX,topY])
             self.canvas.create_rectangle(topX, topY, topX+50, topY+50, fill="#000000")
             self.availablePos.remove([topX, topY])
@@ -159,10 +152,13 @@ class Game():
         self.canvas.update()
         self.agent_pos = self.initial_pos.copy()
 
-    def setAgentPos(self, pos):     
-        self.initial_pos[0] = pos[0]*50
-        self.initial_pos[1] = pos[1]*50
-
+    def setAgentPos(self, pos, multiply=False):
+        if multiply:
+            self.initial_pos[0] = pos[0]*50
+            self.initial_pos[1] = pos[1]*50
+        else:
+            self.initial_pos[0] = pos[0]
+            self.initial_pos[1] = pos[1]
 
 class Agent():
     def __init__(self):
@@ -170,8 +166,8 @@ class Agent():
         self.goal = self.game.winPos
         self.lr = 0.1       # alpha
         self.gamma = 0.95    # discount factor
-        self.epsilon = 0.1  # e-greedy
-        self.episodes = 500 # nr of runs
+        self.epsilon = 0.2  # e-greedy
+        self.episodes = 700 # nr of runs
         self.actions = ['up', 'down', 'left', 'right']
 
         # list of steps taken in a episode
@@ -257,8 +253,8 @@ class Agent():
         self.game.root.unbind("<ButtonPress-1>", self.game.drawObs)
         self.game.root.unbind("<ButtonPress-2>", self.game.dGoal)
         r = 0   # episode count
-
-        while r < self.episodes:
+        tmpPos = []
+        while r < self.episodes:            
             if self.game.gameEnd(self.game.agent_pos):
                 self.visitedCells[tuple(self.game.agent_pos)] += 1
                 self.paths[r] = self.states.copy()
@@ -269,25 +265,24 @@ class Agent():
                 for a in self.actions:
                     self.Qvalues[tuple(self.game.agent_pos)][a] = final_rwd
                 
-                # Change start position to better explor the map
-                if r == self.episodes/4-1:
-                    self.epsilon = 0.1
-                    self.game.setAgentPos([0,0])	# top left
-                if r == self.episodes/2-1:
-                    self.epsilon = 0.1
-                    self.game.setAgentPos([self.game.col-1,0])	#top right
-                if r == 3*self.episodes/4-1:
-                    self.epsilon = 0.1
-                    self.game.setAgentPos([self.game.col-1,self.game.r-1])	# bottom right
+                # Change start position to a random one in the map
+                if len(tmpPos) == 0:
+                    tmpPos = self.game.availablePos.copy()
+                newIndex = np.random.choice(len(tmpPos))
+                newPos = tmpPos.pop(newIndex)
+                self.game.setAgentPos(newPos)
 
-                if r == self.episodes/4-11:
-                    self.epsilon = 0
-                elif r == self.episodes/2-11:
-                    self.epsilon = 0
-                elif r == 3*self.episodes/4-11:
-                    self.epsilon = 0
-                elif r == self.episodes-11:
-                    self.epsilon = 0
+                # In the last episodes the agent will be in exploitation mode only
+                if self.episodes > len(self.game.availablePos):
+                    if r == self.episodes-len(self.game.availablePos):
+                        self.epsilon = 0
+                else:
+                    if r == self.episodes*0.9:
+                        self.epsilon = 0
+
+                # After 30% of the episodes the exploration probability decreases to 10%
+                if r == self.episodes*0.3:
+                    self.epsilon = 0.1
 
                 r += 1
                 if r < self.episodes:
