@@ -164,10 +164,10 @@ class Agent():
     def __init__(self):
         self.game = Game()
         self.goal = self.game.winPos
-        self.lr = 0.1       # alpha
-        self.gamma = 0.95    # discount factor
-        self.epsilon = 0.2  # e-greedy
-        self.episodes = 700 # nr of runs
+        self.lr = 0.2       # alpha
+        self.gamma = 0.9    # discount factor
+        self.epsilon = 0.3  # e-greedy
+        self.episodes = 500 # nr of runs
         self.actions = ['up', 'down', 'left', 'right']
 
         # list of steps taken in a episode
@@ -204,7 +204,7 @@ class Agent():
         elif tuple(pos) == old_pos:
             return -100      # agent hit a wall(not drawn on canvas) or obstacle
         else:
-            return -1        # living penalty
+            return -10        # living penalty
 
     # choose the best action (the one with highest q_value) or a random one (exploitation and exploration)
     # https://towardsdatascience.com/simple-reinforcement-learning-q-learning-fcddc4b6fe56
@@ -272,17 +272,17 @@ class Agent():
                 newPos = tmpPos.pop(newIndex)
                 self.game.setAgentPos(newPos)
 
-                # In the last episodes the agent will be in exploitation mode only
-                if self.episodes > len(self.game.availablePos):
-                    if r == self.episodes-len(self.game.availablePos):
-                        self.epsilon = 0
-                else:
-                    if r == self.episodes*0.9:
-                        self.epsilon = 0
+                # # In the last episodes the agent will be in exploitation mode only
+                # if self.episodes > len(self.game.availablePos):
+                #     if r == self.episodes-len(self.game.availablePos):
+                #         self.epsilon = 0
+                # else:
+                #     if r == self.episodes*0.9:
+                #         self.epsilon = 0
 
-                # After 30% of the episodes the exploration probability decreases to 10%
-                if r == self.episodes*0.3:
-                    self.epsilon = 0.1
+                # # After 30% of the episodes the exploration probability decreases to 10%
+                # if r == self.episodes*0.3:
+                #     self.epsilon = 0.1
 
                 r += 1
                 if r < self.episodes:
