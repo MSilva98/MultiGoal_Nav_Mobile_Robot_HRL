@@ -9,13 +9,21 @@ import matplotlib.pyplot as plt
 
 class Game():
     def __init__(self):
-        self.title = input("Graphs Window Title: ")
+        if title == None:
+            self.title = input("Graphs Window Title: ")
+        else:    
+            self.title = title
+        
         # Ask user for grid size
-        self.r, self.col = [int(x) for x in input("Grid Size (rows,columns): ").replace("(","").replace(")","").split(",")]
+        if size == None:
+            self.r, self.col = [int(x) for x in input("Grid Size (rows,columns): ").replace("(","").replace(")","").split(",")]
+        else:
+            self.col, self.r = size
         self.width = 50*self.col
         self.height = 50*self.r
         
         self.root = tk.Tk()
+        self.root.title(self.title)
         # Create canvas (top left corner is (0,0) bottom right corner is (width,height))
         self.canvas = tk.Canvas(self.root, height=self.height, width=self.width, bg='white')
         self.canvas.pack(fill=tk.BOTH, expand=True)
@@ -34,13 +42,27 @@ class Game():
         self.drawGrid()
         self.drawAgent()
 
-        print("Use Left Mouse Button to create obstacles\nUse Right Mouse button to select Goal Position\nTo run the agent hit <Return>!")
+        if not autorun:
+            print("To run the agent hit <Return>!")
+
         self.winPos = []
         self.obs = []
-        # Left mouse button to draw obstacles
-        self.drawObs = self.root.bind("<ButtonPress-1>", self.drawObstacles)
-        # Right mouse button to draw goal
-        self.dGoal = self.root.bind("<ButtonPress-3>", self.drawGoal)
+        if obsFile == None:
+            # Left mouse button to draw obstacles
+            print("\nUse Left Mouse Button to create obstacles")
+            self.drawObs = self.root.bind("<ButtonPress-1>", self.drawObstacles)
+        else:
+            self.drawObsFromFile()
+
+        if goal == None:    
+            # Right mouse button to draw goal
+            print("\nUse Right Mouse button to select Goal Position")
+            self.dGoal = self.root.bind("<ButtonPress-3>", self.drawGoal)
+        else:
+            if goal != self.initial_pos:
+                self.canvas.create_image(goal[0]*50,goal[1]*50, image=self.vic, anchor='nw', tags="goalPos")
+                self.winPos.append(goal[0]*50)
+                self.winPos.append(goal[1]*50)
 
     def loadImages(self):
         # https://stackoverflow.com/questions/43009527/how-to-insert-an-image-in-a-canvas-item      HOW TO ADD IMAGES TO CANVAS
@@ -87,6 +109,15 @@ class Game():
             self.obs.append([topX,topY])
             self.canvas.create_rectangle(topX, topY, topX+50, topY+50, fill="#000000")
             self.availablePos.remove([topX, topY])
+
+    def drawObsFromFile(self):
+        f = open(obsFile, "r")
+        for l in f:
+            coords = [int(i)*50 for i in l.split(",")]
+            if coords in self.availablePos and coords != self.initial_pos:
+                self.obs.append(coords)
+                self.canvas.create_rectangle(coords[0], coords[1], coords[0]+50, coords[1]+50, fill="#000000")
+                self.availablePos.remove(coords)            
 
     def drawResult(self, Qvalues):
         self.canvas.delete(self.agent)
@@ -164,10 +195,10 @@ class Agent():
     def __init__(self):
         self.game = Game()
         self.goal = self.game.winPos
-        self.lr = 0.2       # alpha
-        self.gamma = 0.9    # discount factor
-        self.epsilon = 0.3  # e-greedy
-        self.episodes = 500 # nr of runs
+        self.lr = lr                # alpha -> learning rate
+        self.gamma = df             # gamma -> discount factor
+        self.epsilon = epsilon      # e-greedy -> exploration/exploitation balance
+        self.episodes = episodes    # nr of runs
         self.actions = ['up', 'down', 'left', 'right']
 
         # list of steps taken in a episode
@@ -193,9 +224,12 @@ class Agent():
                 self.visitedCells[(j,i)] = 0
                 for a in self.actions:
                     self.Qvalues[(j,i)][a] = 0   # Each state has all 4 actions
+        if not autorun:
+            # start the agent when Return is pressed
+            self.game.root.bind("<Return>", self.run)
+        else:
+            self.game.root.after(500, self.run)
 
-        # start the agent when Return is pressed
-        self.game.root.bind("<Return>", self.run)
         self.game.root.mainloop()
 
     def reward(self, pos, old_pos=None):
@@ -248,10 +282,13 @@ class Agent():
         self.states.clear()
         time.sleep(0.1)
 
-    def run(self,event):
+    def run(self, event=None):
         # block mouse clicks after simulation begins
-        self.game.root.unbind("<ButtonPress-1>", self.game.drawObs)
-        self.game.root.unbind("<ButtonPress-2>", self.game.dGoal)
+        if obsFile == None:
+            self.game.root.unbind("<ButtonPress-1>", self.game.drawObs)
+        if goal == None:
+            self.game.root.unbind("<ButtonPress-2>", self.game.dGoal)
+
         r = 0   # episode count
         tmpPos = []
         while r < self.episodes:            
@@ -368,6 +405,7 @@ class Agent():
         plt1.set(xlabel="Number of episodes", ylabel="Number of steps")        
         plt3.plot(self.rewardSum)
         plt3.set(xlabel="Number of episodes", ylabel="Reward Sum")
+        plt.tight_layout()
         
         fig2, plt2 = plt.subplots(1)
         fig2.canvas.set_window_title(self.game.title)
@@ -376,13 +414,56 @@ class Agent():
         # Loop over data dimensions and create text annotations.
         for i in range(self.game.r):
             for j in range(self.game.col):
-                text = plt2.text(j, i, mat[i, j],
+                text = plt2.text(j, i, int(mat[i, j]),
                                ha="center", va="center", color="black")
         plt2.set_title("Grid HeatMap")
         plt2.set(xlabel="Coordinate X", ylabel="Coordinate Y")
         # https://stackoverflow.com/questions/14406214/moving-x-axis-to-the-top-of-a-plot-in-matplotlib
         plt2.xaxis.set_label_position("top")
-
-        plt.show()
         
+        plt.tight_layout()
+        fig.savefig("./graphs/" + self.game.title + "_graphs.png")
+        fig2.savefig("./graphs/" + self.game.title + "_heat.png")
+        # plt.show()
+
+# Default variables
+lr = 0.3
+df = 0.99
+epsilon = 0.1
+episodes = 500
+
+size = None
+title = None
+goal = None
+obsFile = None
+autorun = False
+
+for i in range(1, len(sys.argv), 2):
+    if (sys.argv[i] == "--learnrate" or sys.argv[i] == "-lr") and i != len(sys.argv) - 1:
+        lr = float(sys.argv[i + 1])
+    elif (sys.argv[i] == "--discntfact" or sys.argv[i] == "-df") and i != len(sys.argv) - 1:
+        df = float(sys.argv[i + 1])
+    elif (sys.argv[i] == "--egreedy" or sys.argv[i] == "-e") and i != len(sys.argv) - 1:
+        epsilon = float(sys.argv[i + 1])
+    elif (sys.argv[i] == "--title" or sys.argv[i] == "-t") and i != len(sys.argv) - 1:
+        title = sys.argv[i + 1]
+    elif (sys.argv[i] == "--size" or sys.argv[i] == "-s") and i != len(sys.argv) - 1:
+        size = [int(i) for i in sys.argv[i + 1].split(",")]
+    elif (sys.argv[i] == "--goal" or sys.argv[i] == "-g") and i != len(sys.argv) - 1:
+        goal = [int(i) for i in sys.argv[i + 1].split(",")]
+    elif (sys.argv[i] == "--obstacles" or sys.argv[i] == "-o") and i != len(sys.argv) - 1:
+        obsFile = sys.argv[i + 1]
+    elif (sys.argv[i] == "--autorun" or sys.argv[i] == "-ar") and i != len(sys.argv) - 1:
+        if sys.argv[i + 1] == "y" or sys.argv[i + 1] == "Y":
+            autorun = True
+    elif (sys.argv[i] == "--runs" or sys.argv[i] == "-r") and i != len(sys.argv) - 1:
+        episodes = int(sys.argv[i + 1])
+    else:
+        print("Unkown argument", sys.argv[i])
+        quit()
+
+if title != None:
+    title = title + "_lr" + str(lr) + "_df" + str(df) + "_e" + str(epsilon)
+    print(title)
+
 agent = Agent()
