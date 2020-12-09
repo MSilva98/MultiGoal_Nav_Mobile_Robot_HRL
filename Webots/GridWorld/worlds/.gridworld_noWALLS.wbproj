@@ -8,4 +8,4 @@ centralWidgetVisible: 1
 orthographicViewHeight: 1
 textFiles: 0 "controllers/gridworld/gridworld.py"
 consoles: Console:All:All
-renderingDevicePerspectives: Khepera IV:camera;0;0.432181;0;0
+renderingDevicePerspectives: Khepera IV:camera;0;1;0;0
