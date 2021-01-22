@@ -63,7 +63,7 @@ plt1.plot(history.history['accuracy'])
 plt1.plot(history.history['val_accuracy'])
 plt1.set_title('Model accuracy')
 plt1.set(xlabel='Epoch', ylabel='Accuracy')
-plt1.set_yticks(np.arange(0, 1, 0.25))
+plt1.set_yticks(np.arange(min(history.history['accuracy']), max(history.history['accuracy']), 0.25))
 plt1.legend(['Train', 'Test'], loc='upper left')
 # Loss plot
 plt2.plot(history.history['loss']) 
