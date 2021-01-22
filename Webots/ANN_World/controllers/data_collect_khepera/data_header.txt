@@ -1,0 +1,1 @@
+left-us, front-left-us, front-us, front-right-us, right-us, rear-left-ir, rear-ir, rear-right-ir, left-ir, right-ir, front-left-ir, front-right-ir, front-ir, x, z, theta

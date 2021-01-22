@@ -1,2 +1,0 @@
-1 hidden 12 nodes com batch_size default = 0.0039 loss e 0.25 accuracy
-2 hidden 12 node e 8 nodes com batch_size 64 = 0.0036 loss e 0.54 accuracy

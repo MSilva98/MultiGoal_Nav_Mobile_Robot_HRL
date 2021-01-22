@@ -7,11 +7,11 @@ WorldInfo {
   coordinateSystem "NUE"
 }
 Viewpoint {
-  orientation -0.005607474275030782 -0.6583478365246509 -0.7526929535843726 3.139874414299279
-  position 0.04655512821855727 3.5008819983370723 0.48058596750820803
+  orientation -0.02134575349061452 -0.6468944477097869 -0.7622807437750002 3.1133560373373044
+  position 0.07344415434384542 3.4829645370790407 0.5854052017633697
 }
 DEF epuck Robot {
-  translation 0.96 0 0.96
+  translation 0.46 0 0.46
   children [
     GPS {
     }
@@ -1691,7 +1691,6 @@ TexturedBackground {
 TexturedBackgroundLight {
 }
 RectangleArena {
-  floorSize 2 2
   floorAppearance Parquetry {
     type "light strip"
   }

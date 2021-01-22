@@ -1,0 +1,27 @@
+#VRML_SIM R2020b utf8
+WorldInfo {
+  info [
+    ""
+  ]
+  basicTimeStep 16
+  coordinateSystem "NUE"
+}
+Viewpoint {
+  orientation 0.597119334799056 -0.5266465126494887 -0.6050553286462859 4.110312080813283
+  position -0.39164728446746244 2.827786909542027 0.06280778476365495
+}
+TexturedBackground {
+}
+TexturedBackgroundLight {
+}
+RectangleArena {
+  floorAppearance Parquetry {
+    type "light strip"
+  }
+  wallThickness 0.001
+}
+DEF khepera4 Khepera4 {
+  translation -0.43 0 0.43
+  controller "data_collect_khepera"
+  supervisor TRUE
+}

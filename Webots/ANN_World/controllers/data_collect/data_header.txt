@@ -1,1 +1,0 @@
-sharps0, sharps1, sharps2, sharps3, sharps4, sharps5, ps0, ps1, ps2, ps3, ps4, ps5, ps6, ps7, x, y, z, theta
