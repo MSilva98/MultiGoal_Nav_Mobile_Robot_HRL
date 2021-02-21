@@ -23,21 +23,30 @@ front_sensor.enable(timestep)
 
 # Main loop:
 # - perform simulation steps until Webots is stopping the controller
-distances = open("distances.txt", "w+")
+distances = open("distances_mean.txt", "w+")
 j = 0
+i = 0
+val = 0
 while supervisor.step(timestep) != -1:
-    print("Measure ", j)
-    val = front_sensor.getValue()
-    s = "\nDistance: " + str(all_dists[j]) + " Front Sharp Val: " + str(val)
-    distances.write(s)
+    print("Measure " + str(j) + " distance: " + str(all_dists[i]))
+    val += front_sensor.getValue()
     j += 1
-    if j >= len(all_dists):
-        break
+    if j >= 20: # get mean of 20 values for each distance
+        s = "\nDistance: " + str(all_dists[i]) + " Front Sharp Val: " + str(val/20)
+        distances.write(s)
+        val = 0
+        j = 0
+        i += 1
+        if i >= len(all_dists):
+            break
+        atual_pose = initial_pose.copy()
+        atual_pose[0] -= (all_dists[i]-4)/100  # Convert distance to cm
+        translation_field.setSFVec3f(atual_pose)
 
-    atual_pose = initial_pose.copy()
-    atual_pose[0] -= (all_dists[j]-4)/100  # Convert distance to cm
-    translation_field.setSFVec3f(atual_pose)
-    time.sleep(1)   
+    # atual_pose = initial_pose.copy()
+    # atual_pose[0] -= (all_dists[j]-4)/100  # Convert distance to cm
+    # translation_field.setSFVec3f(atual_pose)
+    # time.sleep(1)   
 
 # Enter here exit cleanup code.
 distances.close()

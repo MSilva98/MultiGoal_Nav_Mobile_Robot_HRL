@@ -3,8 +3,8 @@ WorldInfo {
   coordinateSystem "NUE"
 }
 Viewpoint {
-  orientation 0.9981316981876215 -0.03851189555922402 0.04743360595116358 4.882317978197067
-  position 0.9129885661705138 1.399753603670324 0.9140522929283742
+  orientation 0.5529925640677764 -0.6657647971144968 -0.5009555459407942 4.259710795859455
+  position 1.302135677268609 4.381868124423935 -0.28517823857662417
 }
 TexturedBackground {
 }
@@ -18,24 +18,24 @@ RectangleArena {
   }
 }
 Wall {
-  translation 0.75215 0 -0.753052
+  translation 0.76215 0 -0.753052
   rotation 0 1 0 1.5708
   size 0.5 0.1 0.01
 }
 Wall {
-  translation 0.751913 -3.55271e-15 -0.258754
+  translation 0.751913 -3.55271e-15 -0.248754
   rotation 0 1 0 -3.1415853071795863
   name "wall(1)"
   size 0.5 0.1 0.01
 }
 Wall {
-  translation 0.251913 -3.55271e-15 0.00124692
+  translation 0.251913 -3.55271e-15 0.0012469
   rotation 0 1 0 1.5708
   name "wall(2)"
   size 0.5 0.1 0.01
 }
 Wall {
-  translation 0.001913 -3.55271e-15 0.00124792
+  translation 0.001913 -3.55271e-15 0.0012479
   rotation 0 1 0 1.5708
   name "wall(11)"
   size 0.5 0.1 0.01
@@ -53,25 +53,25 @@ Wall {
   size 0.5 0.1 0.01
 }
 Wall {
-  translation 0.501913 -3.55271e-15 -0.508754
+  translation 0.511913 -3.55271e-15 -0.498754
   rotation 0 1 0 -3.1415853071795863
   name "wall(3)"
   size 0.5 0.1 0.01
 }
 Wall {
-  translation 0.001913 -3.55271e-15 -0.508754
+  translation 0.0019131 -3.55271e-15 -0.498754
   rotation 0 1 0 -3.1415853071795863
   name "wall(4)"
   size 0.5 0.1 0.01
 }
 Wall {
-  translation -0.248087 -3.55271e-15 -0.258754
+  translation -0.248087 -3.55271e-15 -0.248754
   rotation 0 -1 0 1.57079
   name "wall(5)"
   size 0.5 0.1 0.01
 }
 Wall {
-  translation -0.248087 -3.55271e-15 0.231246
+  translation -0.248087 -3.55271e-15 0.251246
   rotation 0 -1 0 1.57079
   name "wall(7)"
   size 0.5 0.1 0.01
@@ -101,7 +101,7 @@ Wall {
   size 0.5 0.1 0.01
 }
 Wall {
-  translation 0.001912 -3.55271e-15 -0.258754
+  translation 0.00191207 -3.55271e-15 -0.248754
   rotation 0 1 0 -3.1415853071795863
   name "wall(6)"
   size 0.5 0.1 0.01
@@ -113,7 +113,7 @@ Wall {
   size 0.5 0.1 0.01
 }
 Wall {
-  translation -0.748088 -3.55271e-15 -0.758754
+  translation -0.748088 -3.55271e-15 -0.75875
   rotation 0 1 0 -3.1415853071795863
   name "wall(22)"
   size 0.5 0.1 0.01
@@ -125,49 +125,49 @@ Wall {
   size 0.25 0.25 0.01
 }
 Wall {
-  translation 0.001912 -3.55271e-15 -0.758754
+  translation 0.001912 -3.55271e-15 -0.74875
   rotation 0 1 0 -3.1415853071795863
   name "wall(23)"
   size 0.5 0.1 0.01
 }
 Wall {
-  translation 0.501912 -3.55271e-15 -0.758754
+  translation 0.501912 -3.55271e-15 -0.748754
   rotation 0 1 0 -3.1415853071795863
   name "wall(24)"
   size 0.5 0.1 0.01
 }
 Wall {
-  translation 0.00191725 -3.55271e-15 0.481246
+  translation 0.00191739 -3.55271e-15 0.501246
   rotation 0 1 0 -3.1415853071795863
   name "wall(10)"
   size 0.5 0.1 0.01
 }
 Wall {
-  translation 0.501917 -3.55271e-15 0.481246
+  translation 0.501917 -3.55271e-15 0.501246
   rotation 0 1 0 -3.1415853071795863
   name "wall(12)"
   size 0.5 0.1 0.01
 }
 Wall {
-  translation 0.751917 -3.55271e-15 0.731246
+  translation 0.751917 -3.55271e-15 0.75125
   rotation 0 1 0 -3.1415853071795863
   name "wall(13)"
   size 0.5 0.1 0.01
 }
 Wall {
-  translation 0.251917 -3.55271e-15 0.731246
+  translation 0.251917 -3.55271e-15 0.751246
   rotation 0 1 0 -3.1415853071795863
   name "wall(14)"
   size 0.5 0.1 0.01
 }
 Wall {
-  translation -0.248083 -3.55271e-15 0.731246
+  translation -0.248083 -3.55271e-15 0.751246
   rotation 0 1 0 -3.1415853071795863
   name "wall(15)"
   size 0.5 0.1 0.01
 }
 Wall {
-  translation -0.748083 -3.55271e-15 0.731246
+  translation -0.748083 -3.55271e-15 0.75125
   rotation 0 1 0 -3.1415853071795863
   name "wall(16)"
   size 0.5 0.1 0.01
@@ -241,8 +241,8 @@ DEF epuck Robot {
         }
       ]
       endPoint DEF EPUCK_LEFT_WHEEL Solid {
-        translation -0.02600002228256937 0.019942283634705304 8.977773091279142e-06
-        rotation 0.18792805693436768 0.097235904307657 -0.9773577770347691 1.490116119384766e-07
+        translation -0.026000022282569327 0.019942283634705304 8.977773091279125e-06
+        rotation 0.20114979654132034 0.09697629678669807 -0.974748355840072 1.4292691717483762e-07
         children [
           DEF EPUCK_WHEEL Transform {
             rotation 0 0 1 1.57
@@ -392,8 +392,8 @@ DEF epuck Robot {
         }
       ]
       endPoint DEF EPUCK_RIGHT_WHEEL Solid {
-        translation 0.0259999745077778 0.019942185973978052 8.89119449869081e-06
-        rotation 0.15074548953320127 -0.0941700048526336 0.984077134970349 1.4600096599955432e-07
+        translation 0.02599997450777776 0.019942185973978052 8.891194498690796e-06
+        rotation 0.15281528195839608 -0.09413972820994239 0.9837607438663803 1.5196262340524156e-07
         children [
           Transform {
             rotation 0 1 0 3.14159
