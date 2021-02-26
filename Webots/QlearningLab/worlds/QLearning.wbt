@@ -3,8 +3,8 @@ WorldInfo {
   coordinateSystem "NUE"
 }
 Viewpoint {
-  orientation 0.5529925640677764 -0.6657647971144968 -0.5009555459407942 4.259710795859455
-  position 1.302135677268609 4.381868124423935 -0.28517823857662417
+  orientation -0.26076420554967666 0.7689726667779839 0.5836806205900634 2.6119705157058415
+  position 1.004752006150804 1.6315672543612856 0.5763517487947036
 }
 TexturedBackground {
 }
@@ -173,7 +173,7 @@ Wall {
   size 0.5 0.1 0.01
 }
 DEF epuck Robot {
-  translation 0.922415 0 0.868534
+  translation 0.962415 0 0.868534
   rotation 0 1 0 -1.5707953071795862
   children [
     GPS {
@@ -195,7 +195,7 @@ DEF epuck Robot {
       boundingObject USE BaseSensors
     }
     SharpGP2Y0A41SK0F {
-      translation -2.17621e-07 0.0799999 -0.0300002
+      translation -2.17621e-07 0.08 -0.03
       rotation -0.5773489358504746 0.577353935849919 0.5773479358505857 2.094405307179586
       name "sharps0"
     }

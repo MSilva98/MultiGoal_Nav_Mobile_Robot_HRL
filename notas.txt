@@ -1,0 +1,15 @@
+
+    - nao ha goal
+    - objetivo andar bem no corredor aka andar sempre no centro
+    - reward: dar muita info ao robot e guia-lo
+            - função da postura do robot dentro de labirinto 
+                -> função da posição e orientação do robot no corredor, sabendo que a posição e orientação ideal são no meio do corredor e na direção do corredor
+                    -> distancia do centro do robot ao centro do corredor
+                    -> orientação ? -> depende da distancia ao centro do corredor 
+
+    ver cenas do diogo
+
+    - qlearning com reward medio (average reward)
+        - usar r-learning (sutton&&barto) 
+
+    Tabela inicializada com reward por cada estado igual para todas as ações
