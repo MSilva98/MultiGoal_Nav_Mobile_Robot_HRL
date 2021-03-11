@@ -1,0 +1,3 @@
+
+Distance: 4 Front Sharp Val: 2.393988403349643
+Distance: 5 Front Sharp Val: 2.0867163658966574
