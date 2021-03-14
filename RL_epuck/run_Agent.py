@@ -17,7 +17,7 @@ class fill_QTable():
         self.supervisor = Supervisor()
 
         # Robot reinforcement learning brain
-        self.brain = Agent()
+        self.brain = Agent(Qtable="QTable.txt")
 
         # node to use supervisor functions
         self.robot_node = self.supervisor.getFromDef("epuck")
@@ -47,51 +47,44 @@ class fill_QTable():
             self.ds.append(self.supervisor.getDistanceSensor(self.dsNames[i]))
             self.ds[i].enable(self.timestep)
 
+        self.leftMotor = self.supervisor.getMotor('left wheel motor')
+        self.rightMotor = self.supervisor.getMotor('right wheel motor')
+        self.leftMotor.setPosition(float('inf'))
+        self.rightMotor.setPosition(float('inf'))
+        self.leftMotor.setVelocity(0.0)
+        self.rightMotor.setVelocity(0.0)
+
         self.run()
 
     def run(self):
         # Main loop:
         # - perform simulation steps until Webots is stopping the controller
-        rot = 0
-        i = 0
+        first = True
+        action = ''
+        cur_state = 0
         while self.supervisor.step(self.timestep) != -1:
             # read sharp sensors outputs
             dsValues = []
             for i in range(len(self.ds)):
                 dsValues.append(self.ds[i].getValue())
 
-            print(self.brain.getPosOriFromSensors(dsValues))
-
-            # add initial reward to that state in QTable
-            # dsValues = [front, front left, left, front right, right, rear]
-            # self.brain.fillRwdTable(dsValues)
-
-            # # rotate 1 degree until 360º
-            # rot += math.pi/180
-            # self.initial_rot[3] = rot
+            if not first:   # first step won't update table before take action
+                # This is what happens after Take Action
+                # R-Learning algorithm from Sutton & Barto (1998)
+                self.brain.updateQTable(cur_state, dsValues, action)
+                
+            # New cicle starts here
+            cur_state = self.brain.sensorsToState(dsValues) # current state
+            action = self.brain.chooseAction(cur_state)     # best action in current state
+            speeds = self.brain.actionToSpeed(action)   # speed of each motor
             
-            # if rot >= math.pi*2:    # after rotating 360º translate 5mm to the right
-            #     rot = 0
-            #     self.initial_pos[0] = self.initial_pos[0]+0.005
-            #     if self.initial_pos[0] > 0.11:
-            #         break
-            #     self.translation_field.setSFVec3f(self.initial_pos)
-            # else:
-            #     self.rotation_field.setSFRotation(self.initial_rot)
-            
-            self.initial_pos[0] = self.initial_pos[0]+0.06
-            self.initial_rot[3] = math.pi/2
-            self.translation_field.setSFVec3f(self.initial_pos)
-            self.rotation_field.setSFRotation(self.initial_rot)
-
-            i += 1
-            if i == 2:
-                break
-
-
+            # Take action
+            self.leftMotor.setVelocity(speeds[0])
+            self.rightMotor.setVelocity(speeds[1])
+            first = False
 
         # Enter here exit cleanup code.
-        # self.brain.saveQTable()
+        self.brain.saveQTable()
         exit(0)
 
 fill_QTable()
