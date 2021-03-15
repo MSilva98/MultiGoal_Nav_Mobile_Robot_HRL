@@ -53,14 +53,13 @@ class fill_QTable():
         # Main loop:
         # - perform simulation steps until Webots is stopping the controller
         rot = 0
-        i = 0
         while self.supervisor.step(self.timestep) != -1:
             # read sharp sensors outputs
             dsValues = []
             for i in range(len(self.ds)):
                 dsValues.append(self.ds[i].getValue())
 
-            print(self.brain.getPosOriFromSensors(dsValues))
+            print("Value: ", self.brain.getPosOriFromSensors(dsValues))
 
             # add initial reward to that state in QTable
             # dsValues = [front, front left, left, front right, right, rear]
@@ -79,14 +78,12 @@ class fill_QTable():
             # else:
             #     self.rotation_field.setSFRotation(self.initial_rot)
             
-            self.initial_pos[0] = self.initial_pos[0]+0.06
-            self.initial_rot[3] = math.pi/2
-            self.translation_field.setSFVec3f(self.initial_pos)
-            self.rotation_field.setSFRotation(self.initial_rot)
+            # self.initial_pos[0] = self.initial_pos[0]+0.06
+            # self.initial_rot[3] = math.pi/2
+            # self.translation_field.setSFVec3f(self.initial_pos)
+            # self.rotation_field.setSFRotation(self.initial_rot)
 
-            i += 1
-            if i == 2:
-                break
+            break
 
 
 

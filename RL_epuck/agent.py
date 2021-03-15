@@ -98,9 +98,12 @@ class Agent():
 
     def sensorVoltageToDistance(self, voltage):
         # from webots documentation
-        # TODO change this equation to count with offset
-        # NOT JUST ADD 0.03 (negative sensors rip)
-        return round((0.1594*pow(voltage,-0.8533))-0.02916,4) # in meters rounded to 3 decimal cases
+        d = (0.1594*pow(voltage,-0.8533))-0.02916 # in meters rounded to 4 decimal cases
+        # from IR_convert_to_cm.py
+        # d = (14.8903/(voltage+0.0418)-1.34)/100    # divide by 100 to meters
+        # Add 0.03 to compensate the sensor offset to the robot center
+        d = round(d,2)+0.03
+        return d if d <= 0.3 else 0.3 
 
     def reward(self, pos, ori):
         # TODO - Create my reward
@@ -116,14 +119,13 @@ class Agent():
         dist_IR_sensor = []
         for s in sensor_values:
             d = self.sensorVoltageToDistance(s)
-            if d > 0.3:
-                d = 0.3
             dist_IR_sensor.append(d)   
 
-        # Values from matlab with x = 0.04 and fi = pi/2
-        # Equivalent to webots x = -0.11 and rot = 0
-        # dist_IR_sensor = [0.3, 0.0566, 0.04, 0.3, 0.26, 0.3]
-        
+        print(dist_IR_sensor)
+        # Values from matlab with x = 0.10 and fi = pi/2
+        # Equivalent to webots x = -0.05 and rot = 0
+        # dist_IR_sensor = [0.3, 0.1414, 0.1, 0.2828, 0.2, 0.3]
+
         fs = dist_IR_sensor[0]  # Front sensor - d1
         bs = dist_IR_sensor[5]  # Back sensor  - d4
         ls = dist_IR_sensor[2]  # Left sensor  - d3
@@ -135,6 +137,7 @@ class Agent():
             ori = math.pi/2-math.acos((0.15-pos)/fs)
         elif ls != 0.3 and rs != 0.3:
             pos = 0.15*(ls-rs)/(ls+rs)
+            print((0.15-pos)/rs, rs)
             ori = math.acos((0.15-pos)/rs)
         else:
             print("ERROR: Sensor Distances out of range")
@@ -142,39 +145,57 @@ class Agent():
         # Absolute values
         pos = abs(pos) 
         ori = abs(ori)
+        print("POS ORI: ", pos, ori)
         sol = [(pos, ori), (pos, -ori), (-pos, ori), (-pos, -ori)] # All 4 possible solutions
         
-        i_sol = [0,1,2,3]
+        # Intersection points in the robot frame in order:
+        # x
+        # y
+        # z (uniform -> 2d sensor measure)
         P_R = np.matrix([
             [0, -dist_IR_sensor[1]*math.sqrt(2)/2, -dist_IR_sensor[2], 0, dist_IR_sensor[4], dist_IR_sensor[3]*math.sqrt(2)/2],
             [dist_IR_sensor[0], dist_IR_sensor[1]*math.sqrt(2)/2, 0, -dist_IR_sensor[5], 0, dist_IR_sensor[3]*math.sqrt(2)/2],
             [1, 1, 1, 1, 1, 1]
         ])
-
+        print("P_R\n",P_R)
+        possible_sols = [0, 1, 2, 3]
         for k in range(0,4):
-            # Coordinate transformation
+            # Coordinate transformation from the robot frame to a frame localized in the center 
+            # of the corridor with origin in the same Y as the robot frame
             T_R2L = np.matrix([
                 [math.cos(sol[k][1]), -math.sin(sol[k][1]), sol[k][0]], 
                 [math.sin(sol[k][1]), math.cos(sol[k][1]), 0], 
                 [0, 0, 1]
             ])
+            print("T_R2L " + str(k) + "\n", T_R2L)
 
             # Reference frame new coordinates
-            P_L = []
+            PL = []
             for m in range(len(sensor_values)):
                 if dist_IR_sensor[m] < 0.3:
-                    P_L = T_R2L*P_R[:,m]
+                    if len(PL) == 0:
+                        PL = T_R2L*P_R[:,m]
+                    else:
+                        PL = np.hstack((PL, T_R2L*P_R[:,m]))
+
+            print("PL " + str(k) + "\n", PL)
             
             # Get matrix first column and convert to list
-            tmp = np.array(P_L[0,:]).reshape(-1,).tolist()
+            tmp = np.array(PL[0,:]).reshape(-1,).tolist()
             # Absolute value of each element
-            P_L_xx = [abs(x) for x in tmp]
-            for m in range(len(P_L_xx)):
-                if abs(P_L_xx[m]-0.15) > 1e-8:
-                    i_sol.remove(k)
+            PL_xx = [round(abs(x),2) for x in tmp]
+            print("PL_xx " + str(k) + "\n", PL_xx)
+            for x in PL_xx:
+                if abs(x-0.15) > 1e-04:     # if not all values in PL_xx are equal to 0.15 not a SOLUTION
+                    possible_sols.remove(k)
                     break
 
-        return sol[i_sol[0]]
+        # May exist more than 1 final solution (ambiguous cases)
+        final_sols = []
+        for s in possible_sols:
+            final_sols.append(sol[s])
+
+        return final_sols
         
     def sensorsToState(self, sensor_values):
         return tuple([self.discretizeSensor(self.sensorVoltageToDistance(x)) for x in sensor_values])
@@ -210,8 +231,3 @@ class Agent():
     def saveRwdTable(self):
         with open("RwdTable.txt", "w+") as jsonFile:
             json.dump(self.RwdTable, jsonFile)
-
-    
-a = Agent()
-
-print(a.sensorVoltageToDistance(150))

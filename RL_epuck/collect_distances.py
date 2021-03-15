@@ -7,7 +7,7 @@ import time
 
 all_dists = [4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30]
 # Front sensor is 3 cm closer to wall than robot center
-front_sensor_offset = -0
+front_sensor_offset = -3
 robot_pose = [x-front_sensor_offset for x in all_dists]
 print(robot_pose)
 
@@ -27,9 +27,9 @@ front_sensor.enable(timestep)
 
 # Main loop:
 # - perform simulation steps until Webots is stopping the controller
-distances = open("distances_mean_noOff.txt", "w+")
+distances = open("distancesToSensor.txt", "w+")
 j = 0
-i = -1
+i = 0
 val = 0
 while supervisor.step(timestep) != -1:
     if i >= 0:
@@ -48,7 +48,7 @@ while supervisor.step(timestep) != -1:
         if i >= len(all_dists):
             break
         actual_pose = initial_pose.copy()
-        actual_pose[0] -= (robot_pose[i])/100  # Convert distance to cm
+        actual_pose[2] -= i/100  # move 1 cm back
         translation_field.setSFVec3f(actual_pose)
 
     # atual_pose = initial_pose.copy()

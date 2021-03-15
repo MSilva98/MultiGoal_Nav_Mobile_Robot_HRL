@@ -22,4 +22,3 @@
         - distancia do centro do robot à parede é 15 cm
         - distancia do sensor à parede é 12 cm
     
-    
