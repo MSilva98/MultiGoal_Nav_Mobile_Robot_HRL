@@ -3,15 +3,15 @@ WorldInfo {
   coordinateSystem "NUE"
 }
 Viewpoint {
-  orientation 0.7585669758834771 0.45093023543912525 0.4703595070430821 4.579152359213277
-  position -0.1278470538861049 3.403059611885864 0.4585313631281709
+  orientation -0.03082600449770534 0.7363905227086787 0.6758540933600585 3.190909267821362
+  position -0.8250229009027212 2.033030545083972 -0.7134904228378856
 }
 TexturedBackground {
 }
 TexturedBackgroundLight {
 }
 RectangleArena {
-  floorSize 0.3 3
+  floorSize 2 2
   floorTileSize 0.1 0.1
   floorAppearance Parquetry {
     type "light strip"
@@ -19,6 +19,7 @@ RectangleArena {
   wallHeight 0.2
 }
 DEF epuck Robot {
+  translation -0.86 0 -0.85
   children [
     GPS {
     }
@@ -86,7 +87,7 @@ DEF epuck Robot {
       ]
       endPoint DEF EPUCK_LEFT_WHEEL Solid {
         translation -0.026000022282569292 0.019942283634700644 8.9777730613212e-06
-        rotation 0.2045257757411857 0.09690706506018769 -0.9740524769225152 1.3657139822709086e-07
+        rotation 0.20452577574118566 0.09690706506018767 -0.974052476922515 1.3657139822709086e-07
         children [
           DEF EPUCK_WHEEL Transform {
             rotation 0 0 1 1.57
@@ -1692,4 +1693,25 @@ DEF epuck Robot {
   cpuConsumption 1.11
   window "e-puck"
   remoteControl "e-puck_bluetooth"
+}
+Wall {
+  translation 0 0 0.7
+  size 1.4 0.2 0.01
+}
+Wall {
+  translation 0 0 -0.7
+  name "wall(1)"
+  size 1.4 0.2 0.01
+}
+Wall {
+  translation 0.7 0 0
+  rotation 0 1 0 1.5708
+  name "wall(2)"
+  size 1.41 0.2 0.01
+}
+Wall {
+  translation -0.7 0 0
+  rotation 0 1 0 1.5708
+  name "wall(3)"
+  size 1.41 0.2 0.01
 }

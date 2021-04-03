@@ -39,15 +39,13 @@ for k = 1:4,
                         sin(ORI_sol(k))  cos(ORI_sol(k)) 0
                          0 0 1];
         % Reference frame new coordinates
-        P_L = [];
+        PL = [];
         for m = 1:NUM_sensors
              if Dist_IR_sensor(m) < 0.3;
-                P_L = [P_L T_R2L*P_R(:,m)];
+                P_L = [PL T_R2L*P_R(:,m)];
              end
         end
         P_L_xx = abs(P_L(1,:));
-        % alterar isto aqui para verificar se todos os parametros da P_L_xx sao
-        % iguais a 0.15
         for m =1:length(P_L_xx)
              if abs(P_L_xx(m)-0.15) > 1e-8
                    I_sol(k) = [];

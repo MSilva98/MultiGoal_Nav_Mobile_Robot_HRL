@@ -16,6 +16,8 @@ print(robot_pose)
 supervisor = Supervisor()
 robot_node = supervisor.getFromDef("epuck")
 translation_field = robot_node.getField("translation")
+# Tested in QLearning_giant_corridor.wbt
+# Robot with translation (0,0,4.93) and with rotation (0,1,0,3.14)
 initial_pose = translation_field.getSFVec3f()   # ROBOT IS 4.3 cm away from WALL
 
 # get the time step of the current world.
@@ -25,13 +27,39 @@ timestep = 32
 front_sensor = supervisor.getDistanceSensor("sharps0")
 front_sensor.enable(timestep)
 
+# initialize devices
+ds = []
+dsNames = [
+    'sharps0',  # front
+    'sharps1',  # front left
+    'sharps2',  # left
+    'sharps3',  # front right
+    'sharps4',  # right
+    'sharps5'   # rear
+]
+# enable sharp distance sensors
+for i in range(len(dsNames)):
+    ds.append(supervisor.getDistanceSensor(dsNames[i]))
+    ds[i].enable(timestep)
+
+
 # Main loop:
 # - perform simulation steps until Webots is stopping the controller
-distances = open("distancesToSensor.txt", "w+")
+distances = open("distancesToSensor_all.txt", "w+")
+# distances = open("distancesToSensor_validation.txt", "w+")
 j = 0
 i = 0
 val = 0
 while supervisor.step(timestep) != -1:
+    # # COLLECT 10 DATA SAMPLES FROM ALL SENSORS IN SAME POSIITON
+    # distances.write("\n")
+    # for i in range(len(ds)):
+    #     distances.write("\n"+str(ds[i].getValue()))
+    # j += 1
+    # if j >= 10:
+    #     break
+
+    # COLLECT DATA FROM FRONT SENSOR ONLY
     if i >= 0:
         print("Measure " + str(j) + " distance: " + str(all_dists[i]) + " robot_pose: " + str(robot_pose[i]))
         val += front_sensor.getValue()
@@ -50,11 +78,10 @@ while supervisor.step(timestep) != -1:
         actual_pose = initial_pose.copy()
         actual_pose[2] -= i/100  # move 1 cm back
         translation_field.setSFVec3f(actual_pose)
-
-    # atual_pose = initial_pose.copy()
-    # atual_pose[0] -= (all_dists[j]-4)/100  # Convert distance to cm
-    # translation_field.setSFVec3f(atual_pose)
-    # time.sleep(1)   
+    atual_pose = initial_pose.copy()
+    atual_pose[0] -= (all_dists[j]-4)/100  # Convert distance to cm
+    translation_field.setSFVec3f(atual_pose)
+    time.sleep(1)   
 
 # Enter here exit cleanup code.
 distances.close()
