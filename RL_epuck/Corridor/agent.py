@@ -4,7 +4,7 @@ import math
 import json
 
 class Agent():
-    def __init__(self, alpha=0.3, beta=0.3, ro=0, epsilon=0.1, RWDTable=None, Qtable=None):
+    def __init__(self, alpha=0.3, beta=0.3, ro=0, epsilon=0.1, sensors_states=4, nr_sensors=6, RWDTable=None, Qtable=None):
         self.alpha = alpha
         self.beta = beta
         self.ro = ro
@@ -12,8 +12,8 @@ class Agent():
         # Actions the agent can perform
         # Front, Light Left, Light Right, Mid Left, Mid Right, Left, Right, Hard Left, Hard Right
         self.actions = ["F", "LL", "LR", "ML", "MR", "L", "R", "HL", "HR"]
-        self.sensors_states = 4 # 4 discretization states -> 1 - Very Close, 2 - Close, 3 - Good, 4 - Far
-        self.nr_sensors = 6     # 6 sharp sensors -> sharp0, sharp1, sharp2, sharp3, sharp4, sharp5 -> front, front left, left, front right, right, rear
+        self.sensors_states = sensors_states # 4 discretization states -> 1 - Very Close, 2 - Close, 3 - Good, 4 - Far
+        self.nr_sensors = nr_sensors         # 6 sharp sensors -> sharp0, sharp1, sharp2, sharp3, sharp4, sharp5 -> front, front left, left, front right, right, rear
         # States will go from (1,1,1,1,1,1) to (4,4,4,4,4,4) = (front, front left, left, front right, right, rear)
         # state 1    (1,1,1,1,1,1)
         # state 2    (1,1,1,1,1,2)
@@ -25,16 +25,6 @@ class Agent():
         # state 4096 (4,4,4,4,4,4)
         self.randomAct = 0  # control if random action was choosen (1 - random, 0 - non-random)
 
-        if Qtable == None:
-            self.QTable = {}
-            for state in itertools.product(range(1,self.sensors_states+1), repeat=self.nr_sensors):
-                self.QTable[str(state)] = {}
-                for a in self.actions:
-                    self.QTable[str(state)][a] = 0  # each state will have all actions
-        else:
-            with open(Qtable, "r") as jsonFile:
-                self.QTable = json.load(jsonFile)
-
         if RWDTable == None:
             self.RwdTable = {}
             for state in itertools.product(range(1,self.sensors_states+1), repeat=self.nr_sensors):
@@ -42,6 +32,26 @@ class Agent():
         else:
             with open(RWDTable, "r") as jsonFile:
                 self.RwdTable = json.load(jsonFile)
+
+        if Qtable == None:
+            self.QTable = {}
+            if RWDTable == None:
+                for state in itertools.product(range(1,self.sensors_states+1), repeat=self.nr_sensors):
+                    self.QTable[str(state)] = {}
+                    for a in self.actions:
+                        self.QTable[str(state)][a] = -500  # each state will have all actions
+            else:
+                for state in itertools.product(range(1,self.sensors_states+1), repeat=self.nr_sensors):
+                    rwd = self.RwdTable[str(state)]
+                    if rwd == 0:
+                        rwd = -500
+                        
+                    self.QTable[str(state)] = {}
+                    for a in self.actions:
+                        self.QTable[str(state)][a] = rwd  # each state will have all actions
+        else:
+            with open(Qtable, "r") as jsonFile:
+                self.QTable = json.load(jsonFile)
 
     def chooseAction(self, state):
         action = ''
@@ -51,6 +61,9 @@ class Agent():
         else:
             # https://thispointer.com/python-how-to-get-all-keys-with-maximum-value-in-a-dictionary/
             # Select the action with highest q_value (if more than one with the same max q_value then select a random one from those)
+            # def notZero(x):
+            #     return x[1] if x[1] != 0 else -500
+            # maxAction = max(self.QTable[state].items(), key=notZero)
             maxAction = max(self.QTable[state].items(), key=lambda x: x[1])
             listofmaxActions = [k for k, v in self.QTable[state].items() if v == maxAction[1]]
             action = np.random.choice(listofmaxActions)
@@ -65,17 +78,33 @@ class Agent():
                 highest_q = nxt_q
         return highest_q
     
-    def discretizeSensor(self, sensor_val):
-        if sensor_val > 0 and sensor_val < 0.07:
-            return 1
-        elif sensor_val >= 0.07 and sensor_val < 0.13:
-            return 2
-        elif sensor_val >= 0.13 and sensor_val < 0.20:
-            return 3
-        elif sensor_val >= 0.20:
-            return 4
-        else:   # bad sensor value
-            return -1
+    def discretizeSensor(self, sensor_val, states_4):
+        if states_4:
+            if sensor_val > 0 and sensor_val < 0.07:
+                return 1
+            elif sensor_val >= 0.07 and sensor_val < 0.13:
+                return 2
+            elif sensor_val >= 0.13 and sensor_val < 0.20:
+                return 3
+            elif sensor_val >= 0.20:
+                return 4
+            else:   # bad sensor value
+                return -1
+        else:
+            if sensor_val > 0 and sensor_val < 0.06:
+                return 1
+            elif sensor_val >= 0.06 and sensor_val < 0.10:
+                return 2
+            elif sensor_val >= 0.10 and sensor_val < 0.15:
+                return 3
+            elif sensor_val >= 0.15 and sensor_val < 0.20:
+                return 4
+            elif sensor_val >= 0.20 and sensor_val < 0.25:
+                return 5
+            elif sensor_val >= 0.25:
+                return 6
+            else:   # bad sensor value
+                return -1
     
     def actionToSpeed(self, action):
         if action == "F":
@@ -104,7 +133,7 @@ class Agent():
         d = ((0.1594*pow(voltage,-0.8533))-0.02916)        
         return d if d <= 0.3 else 0.3
 
-    def sensorVoltageToDistance(self, voltage, b=False):
+    def sensorVoltageToDistance(self, voltage):
         # from IR_convert_to_cm.py
         # Each sensor has a 0.03m offset from robot center 
         # Divide by 100 to convert to meters
@@ -120,11 +149,8 @@ class Agent():
 
     # Pos -> -0.11 to 0.11
     # Ori -> -1.57 to 1.57
-    def reward(self, pos, ori):
-        # Reward from Diogo's dissertation
-        # return -500*(pow(pos,2)+0.0159*pow(ori,2))+2
-        
-        # # newRWD
+    def reward(self, pos, ori): 
+        # # V1
         # if (pos >= 0 and ori >= 0) or (pos <= 0 and ori <= 0):  # Cases when robot is moving to the center
         #     return -500*(pow(pos,2)+0.0159*pow(ori,2))+2
         # else:
@@ -137,33 +163,53 @@ class Agent():
         # else: # Cases when it is walking away
         #     return r-8        
 
-        # V3
-        if (pos >= 0 and ori >= 0) or (pos <= 0 and ori <= 0):  # Cases when robot is moving to the center
-            return -200*(2*pow(pos,2)+0.01*pow(ori,2))+4
-        else: # Cases when it is walking away
-            return -200*(pow(pos,2)+0.02*pow(ori,2))-6     
+        # # V3
+        # if (pos >= 0 and ori >= 0) or (pos <= 0 and ori <= 0):  # Cases when robot is moving to the center
+        #     return -200*(2*pow(pos,2)+0.01*pow(ori,2))+4
+        # else: # Cases when it is walking away
+        #     return -200*(pow(pos,2)+0.02*pow(ori,2))-6
 
         # # V4
         # if (pos >= 0 and ori >= 0) or (pos <= 0 and ori <= 0):  # Cases when robot is moving to the center
         #     return -300*(4*pow(pos,2)+0.02*pow(ori,2))+4
         # else: # Cases when it is walking away
-        #     return -300*(4*pow(pos,2)+0.05*pow(ori,2))+4    # Penalizes much harder rotations
+        #     return -300*(4*pow(pos,2)+0.05*pow(ori,2))-4    # Penalizes much harder rotations
 
-    def sensorsToState(self, sensor_values):
-        return str(tuple([self.discretizeSensor(round(self.sensorVoltageToDistance(v),2)) for v in sensor_values]))
+        # # V5
+        # if (pos >= 0 and ori >= 0) or (pos <= 0 and ori <= 0):  # Cases when robot is moving to the center
+        #     return -400*(4*pow(pos,2)+0.02*pow(ori,2))+15
+        # else: # Cases when it is walking away
+        #     return -400*(4*pow(pos,2)+0.03*pow(ori,2))-10
+
+        # V6
+        if (pos >= 0 and ori >= 0) or (pos <= 0 and ori <= 0):  # Cases when robot is moving to the center
+            return -400*(10*pow(pos,2)+0.02*pow(ori,2))+15
+        else: # Cases when it is walking away
+            return -400*(15*pow(pos,2)+0.03*pow(ori,2))-10
+
+    def sensorsToState(self, sensor_values, sensors_4):
+        return str(tuple([self.discretizeSensor(round(self.sensorVoltageToDistance(v),2),sensors_4) for v in sensor_values]))
 
     # sensor_values organized from sharp0 to sharp5
     # [front, front left, left, front right, right, rear]
-    def fillRwdTable(self, sensor_values, pos, ori, prev_state):
+    def fillRwdTable(self, sensor_values, pos, ori, prev_state, sensors_4):
         dists = [round(self.sensorVoltageToDistance(v),2) for v in sensor_values]
-        state = self.sensorsToState(sensor_values)
+        state = self.sensorsToState(sensor_values, sensors_4)
         rwd = round(self.reward(pos[0], ori),4)
-        print("POS:", pos[0], pos[2], " ORI:", round(ori*180/math.pi,1))
+        print("POS:", pos[0], pos[2], " ORI:", round(ori*180/math.pi,1), ori, state)
         if prev_state != state:
-            with open("rwd_log.txt", "a+") as f:
-                f.write("Prev State: " + prev_state + "\nCur State: " + state + "\nDists:" + str(dists) + "\nPos: (" + str(pos[0]) + ", " + str(pos[2]) + ") ORI:" + str(ori) + " " + str(ori*180/math.pi) + "\nRWD:" + str(rwd) + "\n")
-            prev_state = state
-        self.RwdTable[state] = rwd
+            # Prevent RWD Override only write new RWD if it's better than previous or current RWD is zero
+            r = self.RwdTable[state]
+            if r != 0:
+                if r < rwd:
+                    self.RwdTable[state] = rwd
+                    with open("rwd_log.txt", "a+") as f:
+                       f.write("Prev State: " + prev_state + "\nCur State: " + state + "\nDists:" + str(dists) + "\nPos: (" + str(pos[0]) + ", " + str(pos[2]) + ") ORI:" + str(ori) + " " + str(ori*180/math.pi) + "\nRWD:" + str(rwd) + "\n")
+            else:
+                self.RwdTable[state] = rwd
+                with open("rwd_log.txt", "a+") as f:
+                    f.write("Prev State: " + prev_state + "\nCur State: " + state + "\nDists:" + str(dists) + "\nPos: (" + str(pos[0]) + ", " + str(pos[2]) + ") ORI:" + str(ori) + " " + str(ori*180/math.pi) + "\nRWD:" + str(rwd) + "\n")
+            prev_state = state                
         return state
         
     # sensor_values organized from sharp0 to sharp5
@@ -171,14 +217,15 @@ class Agent():
     # R-Learning implementation from
     # Average Reward Reinforcement Learning: Foundations, Algorithms, and Empirical Results SRIDHAR MAHADEVAN 
     # alpha and beta changed: alpha - adjust relative action values R(s,a), beta - ajust average reward
-    # Low alpha is better than high alpha (default 0.05)
-    # High beta is better than low beta   (default 0.5)
+    # Low beta is better than high beta   (default 0.05)
+    # High alpha is better than low alpha (default 0.5)
+    # NOTE: ALPHA and BETA are swapped unlike the original algorithm (just personal choice)
     def updateQTable(self, cur_state, next_state, action):
         rwd = self.RwdTable[next_state]
         cur_q = self.QTable[cur_state][action]
         new_q = cur_q*(1-self.alpha)+self.alpha*(rwd-self.ro+self.maxQ(next_state))
         self.QTable[cur_state][action] = new_q
-        print(" STATE:", cur_state, " Action:", action, " RWD:", rwd)
+        print("STATE:", cur_state, " NS:", next_state, " Action:", action, " RWD:", rwd)
         if new_q == self.maxQ(cur_state) and not self.randomAct:
             self.ro = self.ro*(1-self.beta)+self.beta*(rwd+self.maxQ(next_state)-self.maxQ(cur_state))
     
@@ -192,19 +239,13 @@ class Agent():
         if new_q == self.maxQ(cur_state) and not self.randomAct:
             self.ro = self.ro+self.beta*(rwd-self.ro+self.maxQ(next_state)-self.maxQ(cur_state))
 
-    def updateQTable_CenterRWD(self, cur_state, next_state, action):
-        if next_state == '(4, 3, 2, 3, 2, 4)':
-            rwd = 100
-            with open("center.txt", "a+") as f:
-                f.write("CENTER POSITION REACHED\n")
-        else:
-            rwd = -1
+    def updateQLearning(self, cur_state, next_state, action):
+        gamma = 0.99
+        rwd = self.RwdTable[next_state]
         cur_q = self.QTable[cur_state][action]
-        new_q = cur_q*(1-self.alpha)+self.alpha*(rwd-self.ro+self.maxQ(next_state))
+        new_q = cur_q+self.alpha*(rwd+gamma*self.maxQ(next_state)-cur_q)
         self.QTable[cur_state][action] = new_q
-        print(" STATE:", cur_state, " Action:", action, " Q_val:", new_q)
-        if new_q == self.maxQ(cur_state) and not self.randomAct:
-            self.ro = self.ro*(1-self.beta)+self.beta*(rwd+self.maxQ(next_state)-self.maxQ(cur_state))
+        print("STATE:", cur_state, " N STATE:", next_state, " Action:", action, " Q_val:", new_q)
 
     def saveQTable(self, name):
         with open(name, "w+") as jsonFile:

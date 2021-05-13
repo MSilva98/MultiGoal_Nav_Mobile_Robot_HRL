@@ -70,43 +70,39 @@ validation_data = [
 ]
 
 # Voltage curve
-# fig1, plt1 = plt.subplots()
-# plt1.plot(t_distances_cm, voltageToSensor, 'k')
-# plt1.set(xlabel='Distance (cm)', ylabel='Voltage (V)', title='Estimation data')   
-# plt.show()
+fig1, plt1 = plt.subplots()
+plt1.plot(t_distances_cm, voltageToSensor, 'k')
+plt1.set(xlabel='Distance (cm)', ylabel='Voltage (V)', title='Raw Voltage to Distance')   
 
 # Inversion of distances
+# Different constants used to get the most linear plot possible
 # For sensor values between max and 0.55
 k = 0.7
 # For lower values than 0.55 and higher than 0.48
-# k = 1.2
+k = 1.2
 # For lower values than 0.48
-# k = 1.4
+k = 1.4
 
 inv_d = [1/x for x in t_distances_cm]
 inv_d_k = [1/(x+k) for x in t_distances_cm]
-# fig2, plt2 = plt.subplots()
-# plt2.plot(inv_d, voltageToSensor, 'r*-')
-# plt2.plot(inv_d_k, voltageToSensor, 'b*-')
-# plt2.set(xlabel='Inverse Distance (1/cm)', ylabel='Voltage (V)', title='Inverted Distances, Constant: ' + str(k))
-# plt2.legend(['Without Corrective Constant', 'With Corrective Constant'], loc='lower right')
-# plt.show()
+fig2, plt2 = plt.subplots()
+plt2.plot(inv_d, voltageToSensor, 'r*-')
+plt2.plot(inv_d_k, voltageToSensor, 'b*-')
+plt2.set(xlabel='Inverse Distance (1/cm)', ylabel='Voltage (V)', title='Inverted Distances with Constant: ' + str(k))
+plt2.legend(['Without Corrective Constant', 'With Corrective Constant'], loc='lower right')
 
 # Linearization
 coef = np.polyfit(inv_d_k, voltageToSensor, 1)
-# x = np.linspace(0.02, 0.255, 100)
-# y = np.polyval(coef, x)
-# fig3,plt3 = plt.subplots()
-# plt3.plot(x, y, 'k:')
-# plt3.plot(inv_d_k, voltageToSensor, 'rx-')
-# plt3.set(xlabel='Inverse Distance (1/cm)', ylabel='Voltage (V)', title='Polynomial Validation')
-# plt.show()
-
+x = np.linspace(0.02, 0.255, 100)
+y = np.polyval(coef, x)
+fig3,plt3 = plt.subplots()
+plt3.plot(x, y, 'k:')
+plt3.plot(inv_d_k, voltageToSensor, 'rx-')
+plt3.set(xlabel='Inverse Distance (1/cm)', ylabel='Voltage (V)', title='Polynomial Validation with Constant: ' + str(k))
 
 print("Equation: " + str(coef[0]) + "/(voltage- " + str(coef[1]) + ")-" + str(k))
 def getDistance(voltage):
-    d = coef[0]/(voltage-coef[1])-k
-    return d if d <= 30 else 30
+    return coef[0]/(voltage-coef[1])-k
 
 # https://cyberbotics.com/doc/guide/distancesensor-sensors#sharp-gp2y0a41sk0f
 # Model of sensor - Sharp GP2Y0A41SK0F
@@ -115,55 +111,61 @@ def getDistance(voltage):
 # Convert meters to voltage: y(x) = 0.5131*x^(-0.5735)-0.6143
 # Convert voltage to meters: y(x) = 0.1594*x^(-0.8533)-0.02916
 def getDistanceWebots(voltage):
-    d = ((0.1594*pow(voltage,-0.8533))-0.02916)*100 # *100 -> m to cm
-    return d if d <= 30 else 30
+    return ((0.1594*pow(voltage,-0.8533))-0.02916)*100 # *100 -> m to cm
     
 # Validation of equation
 m_distances = [getDistance(x) for x in voltageToSensor]
 m_distances_val = [getDistance(x) for x in validation_data]
-# fig4, plt4 = plt.subplots()
-# plt4.plot(t_distances_cm, m_distances, "g")
-# plt4.plot(t_distances_cm, m_distances_val, "bx")
-# plt4.plot(t_distances_cm, t_distances_cm, "k:")
-# plt4.set(xlabel='Real Distances of sensor (cm)', ylabel='Estimated distances (cm)', title='Validation')
-# plt4.legend(["Estimated", "Estimated Val", "Webots", "Webots Val", "X=Y"], loc="upper left")
+fig4, plt4 = plt.subplots()
+plt4.plot(t_distances_cm, m_distances, "g")
+plt4.plot(t_distances_cm, m_distances_val, "bx")
+plt4.plot(t_distances_cm, t_distances_cm, "k:")
+plt4.set(xlabel='Real Distances of sensor (cm)', ylabel='Estimated distances (cm)', title='Equation Validation with Constant: ' + str(k))
+plt4.legend(["Estimated", "Estimated Val", "Webots", "Webots Val", "X=Y"], loc="upper left")
 
 # Comparison to Webots equation (Both very similar, mine is a little better)
 m_distancesWebots = [getDistanceWebots(x) for x in voltageToSensor]
 fig, plt5 = plt.subplots()
 plt5.plot(t_distances_cm, m_distances, "r")
-# plt5.plot(t_distances_cm, m_distancesWebots, "b")
+plt5.plot(t_distances_cm, m_distancesWebots, "b")
 plt5.plot(t_distances_cm, t_distances_cm, "k:")
-plt5.set(xlabel='Real Distances of sensor (cm)', ylabel='Estimated distances (cm)', title='Estimated vs Webots')
-# plt5.legend(["Estimated", "Webots", "X=Y"], loc="upper left")
+plt5.set(xlabel='Real Distances of sensor (cm)', ylabel='Estimated distances (cm)', title='Estimated equation with constant ' + str(k) + ' vs Webots equations')
+plt5.legend(["Estimated", "Webots", "X=Y"], loc="upper left")
+
+
+# PLOT all 3 equations simultaneously
+def sensorVoltageToDistance(voltage):
+    if voltage <= 0.48:
+        d = (15.065187821049603/(voltage+0.04822905725919005)-1.4)
+    elif voltage > 0.48 and voltage <= 0.53:
+        d = (14.483674005107527/(voltage+0.02681880954262667)-1.2)
+    else:
+        d = (13.045778715415159/(voltage-0.028295530064741125)-0.7)
+    
+    return d if d <= 30 else 30
+
+def eq_k14(voltage):
+    return (15.065187821049603/(voltage+0.04822905725919005)-1.4)
+
+def eq_k12(voltage):
+    return (14.483674005107527/(voltage+0.02681880954262667)-1.2)
+
+def eq_k07(voltage):
+    return (13.045778715415159/(voltage-0.028295530064741125)-0.7)
+
+all_vals = [sensorVoltageToDistance(x) for x in validation_data]
+eqk14 = [eq_k14(x) for x in validation_data]
+eqk12 = [eq_k12(x) for x in validation_data]
+eqk07 = [eq_k07(x) for x in validation_data]
+
+fig, plt6 = plt.subplots()
+plt6.plot(t_distances_cm, eqk07, "g", label='Equation K=0.7')
+plt6.plot(t_distances_cm, eqk12, "b", label='Equation K=1.2')
+plt6.plot(t_distances_cm, eqk14, "brown", label='Equation K=1.4')
+plt6.plot(t_distances_cm, all_vals, "r", label='3 Equations')
+# plt6.plot(t_distances_cm, m_distancesWebots, "b", label='Webots Equation')
+plt6.plot(t_distances_cm, t_distances_cm, "k:", label='X=Y')
+plt6.set(xlabel='Real Distances of sensor (cm)', ylabel='Estimated distances (cm)', title='System of 3 Equations vs Each one')
+plt6.legend()
 plt.tight_layout()
 plt.show()
-
-for x in voltageToSensor:
-    print(getDistance(x), x)
-print("\n")
-for x in validation_data:
-    print(getDistance(x))
-
-# Values from 6 sensors, aligned at 0 degrees, 5 cm to the left from center
-# Each measures split by a 0 value, sensors in order from sharp0 to sharp5
-# 10 reads in same spot
-six_sensors = [
-    [0.30943340616967363, 1.134588184556104, 1.7697675298605458, 0.5238705733109741, 0.7690031875769673, 0.3099241672096078],
-    [0.3084871536809765, 1.1225077933865348, 1.76007408274599, 0.5254312522950505, 0.7758388242447617, 0.30991336011781023],
-    [0.3102334698597219, 1.1329294072058884, 1.762005461994565, 0.5251324350199261, 0.7668885371657969, 0.30945357302230414],
-    [0.3094906215081552, 1.1257347609004256, 1.7506112120767445, 0.5233177098056421, 0.7733262442501286, 0.3109677615437699],
-    [0.30932460394742345, 1.1348421074586255, 1.7591285378452912, 0.5263142807871717, 0.7759358880370124, 0.3124979160964847],
-    [0.3079693055110142, 1.1215584012107969, 1.767331740105161, 0.5164259015002256, 0.7717161828374463, 0.30904237479941477],
-    [0.3101562493794013, 1.1239583123157042, 1.762183590003747, 0.5237268815785255, 0.7744436208520675, 0.30966588064642264],
-    [0.30939207254987927, 1.132861590047858, 1.750396324130342, 0.5265902496614587, 0.7694565980619167, 0.3102692268453508],
-    [0.3093951864019828, 1.135037143950305, 1.7591208963264042, 0.5270736450579886, 0.7786640273460418, 0.3104332469835587],
-    [0.3123814794370194, 1.1329113699406557, 1.7610863863443003, 0.5210380961323234, 0.7702866251349426, 0.3065092105264945]
-]
-
-# print("\nVALUES FROM All Sensors")
-# names = ["F", "FL", "L", "FR", "R", "B"]
-# for x in six_sensors:
-#     print("\n")
-#     for v in x:
-#         print(names[x.index(v)] + ":\t" + str(getDistance(v)))

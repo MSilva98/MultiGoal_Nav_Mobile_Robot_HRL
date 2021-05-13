@@ -1,73 +1,120 @@
-
-    - reward: dar muita info ao robot e guia-lo
-            - função da postura do robot dentro de labirinto 
-                -> função da posição e orientação do robot no corredor, sabendo que a posição e orientação ideal são no meio do corredor e na direção do corredor
-                    -> distancia do centro do robot ao centro do corredor
-                    -> orientação ? -> depende da distancia ao centro do corredor 
-    
     
     NOTAS do epuck
         - cada sensor esta deslocado 3cm do centro do robot
         - corredor com 30 cm
         - distancia do centro do robot à parede é 15 cm
         - distancia do sensor à parede é 12 cm
-
-    3754 estados nao cobertos
-        - robot não chega a esses estados pq é impossivel (casos em que todos os sensors estao no mesmo nivel p.e)
-
-    3162 estados nao cobertos usando:
-        - x = [-0.110 to 0.110] -> resolution 0.001
-        - z = [-0.96 to -0.66 and 0.0] -> resolution 0.01
-        - rot = [0 to 360] -> resolution 1 degree -> trimmed between -90 and 90 so that RWD calculated always going forward (robot not intended to go backwards)
-    
-    3214 estados nao cobertos usando:
-    - x = [-0.11 to 0.11] -> resolution 0.01
-    - z = [-1.46 to -1.16 and 0.0] -> resolution 0.01
-    - rot = [0 to 360] -> resolution 1 degree -> trimmed between -90 and 90 so that RWD calculated always going forward (robot not intended to go backwards)
-
-    
-    - converter velocidades das rodas para velocidades linear e angular e usar estas nas ações
-    - contabilizar estados mais provaveis
-    - !algoritmo de reward
-    
+   
     A escrever:
         - Conversão de voltagens para distancias e problemas
             - Apresentar graficos das equações
             - Divisão em 3 equações para melhor resolução
         - Preenchimento da tabela de reward (primeiro - tentativa de calcular posição e orientação com sensors, segundo - preenchimento usando o Supervisor de webots)
             - Nr de estados que não são preenchidos
-            - resolução de 1cm em X, 1 grau, e 1 cm em Y
+            - resolução de 1cm em X e Y, 1 grau
             - Angulos convertidos para encaixarem em -90 a 90, com correção da posição (é sempre considerado que o robot está a andar para a frente)
         - Equações de reward
             - várias equações desenvolvidas
             - Qual a melhor
             - Apresentar gráfico da equação
-        - Algoritmo de treino
-            - Falar da versão do Sutton & barto e da versão do artigo
-            - Hyper-parameters
-        - Discretização de sensores e de velocidades
-            - 4 niveis de sensores
-            - 9 ações diferentes
+        
     
     ########################
     ####### CORREDOR #######
     ########################
-        - Necessita de ações com (2,-2) e (-2,2) para nao ficar preso contra a parede durante treino
-        
-    Resultados:
-        - QTable_newRWD_artigo.txt -> funciona bem, mas fica preso em HR HL e eventualmente sai de lá
-            - Ações a durar 0.5 e leitura dos sensores 0.05
-        - QTable_newRWD_SuttonBarto.txt -> muito instável
-        - QTable_newRWD_newTry_Sutton -> muito instável, para esquecer
-        - QTable_v3_1cm.txt -> funciona bem, talvez melhor que QTable_newRWD_artigo.txt, com ações a 0.5 e leitura a 0.05, com R-Learning do artigo
-        - QTable_v3_2.txt -> alguma instabilidade quase que aleatória
-        - QTable_v3.txt -> não funciona
-        - QTable_v2.txt -> funciona com alguma instabilidade, nunca anda centrado
-        - QTable_v4_1cm.txt -> funciona bem no entanto está pouco centrado (seria interessante usar +3 em vez de +4)
-        MELHOR: QTable_v3_1cm.txt
+        Resultados:
+            - QTable_newRWD_artigo.txt -> funciona bem, mas fica preso em HR HL e eventualmente sai de lá
+                - Ações a durar 0.5 e leitura dos sensores 0.05
+            - QTable_newRWD_SuttonBarto.txt -> muito instável
+            - QTable_newRWD_newTry_Sutton -> muito instável, para esquecer
+            - QTable_v3_1cm.txt -> funciona bem, talvez melhor que QTable_newRWD_artigo.txt, com ações a 0.5 e leitura a 0.05, com R-Learning do artigo
+            - QTable_v3_2.txt -> alguma instabilidade quase que aleatória
+            - QTable_v3.txt -> não funciona
+            - QTable_v2.txt -> funciona com alguma instabilidade, nunca anda centrado
+            - QTable_v4_1cm.txt -> funciona bem no entanto está pouco centrado (seria interessante usar +3 em vez de +4)
+            MELHOR: QTable_v3_1cm.txt
 
-    
+            - QTable_v3_wall_bad_considered: 400h -> muito treino faz varias ações convergir 
+            - QTable_v5_6s_wall_bad_consider: 50h
+
+
     #####################
     ####### CANTO #######
     #####################
-        -
+        PROBLEMAS DA RWD
+            - Muitas posições tem o mesmo estado -> RWD é sobreposta
+
+        - QTable_v7_4 treinada com RWDTable_v7_3 e com getTime()-t < 0.1 nas velocidades
+
+        - QTable_v10_6s_QLearning: 250h
+        - QTable_v7_6states : 250h
+        - QTable_v7_6states_2 (small change in RWD - y == 0 and -1.58 <= ori <= -1.56 no if): 
+
+        QTable symmetric works fine!!!
+
+        TESTAR COM TABELAS DO CORREDOR NOVAS
+
+    ####################
+    #### CRUZAMENTO ####
+    ####################
+    - virar a esquerda ou frente
+    - virar a direita ou frente
+    - virar a esquerda ou direita
+    - virar esquerda, direita ou frente -> EVITAR CRUZAMENTO - Mostrar simetria do CRUZAMENTO no trabalho e porque nao foi abordada
+
+
+    FRONT RIGHT Door
+        - Right is +/- with z = range(1,21), x = range(-11, 12) and theta = range(-90, 91)
+        QTable_v5_5000h_FR_Right_Symmetry_z21.txt
+
+    FRONT LEFT Door 
+        - Left is +/- with z = range(1,21), x = range(-11, 12) and theta = range(-90, 91) 
+        QTable_v5_5000h_FL_Left_z21.txt
+
+    FR_Front and FL_Front HAVE TO BE TOGETHER!! 
+        - QTable_v5_13000h_FR_Front_all does the job but doesn't turn very well in dead-ends
+
+    LEFT RIGHT Door
+        - Left is ok -> QTable_v5_13000h_LR_Left.txt
+        - Right no - MIRROR WORKSSS -> QTable_v5_13000h_LR_Right_Symmetry.txt
+
+
+
+    They all "do the job" for now, next define how to combine everything:
+        - how to differentiate corners from doors -> DONE
+        - which table to use in corridor
+
+    IMPORTANT
+        JOINING LR and FR or LR and FL WORKS -> QTable_v5_13000h_FR_LR_Right.txt, QTable_v5_13000h_FL_LR_Left.txt
+        Happens same as in v5/QTable_v5_13000h_FL_LR_Left_Sym.txt
+        TRY Joining with corner Left with FL -> DOES NOT WORK
+
+    #### HERE UP IS ALL V4 ####
+
+    V5 Folder BEST
+        Current best
+            QTable_v5_13000h_FL_Left_z0_x20_sym
+            QTable_v5_13000h_FR_Right_z0_x20
+            QTable_v5_13000h_corrected_LR_Left_sym
+            QTable_v5_13000h_corrected_LR_Right
+            
+            Both doors together BEST -> Made with join_tables from Current Best
+                QTable_door_left
+                QTable_door_right
+            
+    UPDATE WORKING WITH /LowLevelCombined/QTable_Front.txt:
+        - QTable_v5_17500h_LR_Right
+        - QTable_v5_17500h_LR_Left
+        - QTable_v5_13000h_corrected_FL_Left_z0_x20_sym
+        - QTable_v5_13000h_corrected_FR_Right_z0_x20
+        - Together not WORKING
+
+
+
+    BEST NOW 
+        - v52/QTable_v5_17500h_FL_Left
+        - v52/QTable_v5_17500h_FR_Right
+        - v52/QTable_v5_17500h_FR_Front
+        - LowLevelCombined/QTable_LR_Left
+        - LowLevelCombined/QTable_LR_Right
+

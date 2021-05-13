@@ -1,7 +1,6 @@
 """run_Agent controller."""
 # python script to control the robot with a QTable after training
 
-# You may need to import some classes of the controller module. Ex:
 from controller import Robot, Motor, DistanceSensor
 import numpy as np
 import time
@@ -17,7 +16,7 @@ class agentController():
         self.robot = Robot()
 
         # Robot reinforcement learning brain
-        self.brain = Agent(alpha=0, beta=0, ro=0, epsilon=0, Qtable="QTable_v3_1cm.txt")
+        self.brain = Agent(alpha=0, beta=0, ro=0, epsilon=0, Qtable="QTable_v6_walls_2.txt")
 
         # get the time step of the current world.
         self.timestep = 32
@@ -67,13 +66,14 @@ class agentController():
                     end = True
                     break
 
-            state = self.brain.sensorsToState(dsValues) # next state - state after action                    
+            state = self.brain.sensorsToState(dsValues, False) # next state - state after action                    
             action = self.brain.chooseAction(state)     # best action in current state
             speeds = self.brain.actionToSpeed(action)   # speed of each motor
             print("State: ", state, "Action: ", action)
-            
+            break
+                    
             t = self.robot.getTime()
-            while self.robot.getTime() - t < 0.5:
+            while self.robot.getTime() - t < 0.1:
                 # Take action
                 self.leftMotor.setVelocity(speeds[0])
                 self.rightMotor.setVelocity(speeds[1])

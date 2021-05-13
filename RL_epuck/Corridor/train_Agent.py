@@ -1,7 +1,6 @@
 """train_Agent controller."""
 # python script to train the robot with a given RWD Table
 
-# You may need to import some classes of the controller module. Ex:
 from controller import Robot, Motor, DistanceSensor, Supervisor
 import numpy as np
 import time
@@ -17,7 +16,7 @@ class agentController():
         self.supervisor = Supervisor()
 
         # Robot reinforcement learning brain
-        self.brain = Agent(alpha=0.5, beta=0.05, ro=0, epsilon=0.2, Qtable="QTable_centerRWD.txt" , RWDTable="RwdTable_v2.txt")
+        self.brain = Agent(alpha=0.5, beta=0.05, ro=0, epsilon=0.3, sensors_states=6, Qtable="QTable_v6_walls_2_3500h.txt", RWDTable="RwdTable_v6_walls_2.txt")
 
         # node to use supervisor functions
         self.robot_node = self.supervisor.getFromDef("epuck")
@@ -63,9 +62,36 @@ class agentController():
         action = ''
         cur_state = 0
         next_state = 0
+        last_t = 0
+
+        x_space = [x/100 for x in range(-11, 12, 3) if abs(x) > 1]
+        # z_space = [z/100 for z in range(125, 147, 5)] # giant corridor 3m
+        z_space = [z/100 for z in range(35, 56, 5)]   # corridor 1.25m
+        ori_space = [o*math.pi/180 for o in range(0, 360, 15)]
+        start_pos = []
 
         while self.supervisor.step(self.timestep) != -1:
+            cur_pos = abs(round(self.translation_field.getSFVec3f()[0],2))
+            cur_ori = abs(round(self.rotation_field.getSFRotation()[3]*180/math.pi,0))
+            if cur_ori >= 180:
+                cur_ori -= 180
 
+            t = self.supervisor.getTime()
+            # New random position when centered and 1 min passed, between 1000th hour and 3000th hour
+            r_t = round(t,0)
+            if cur_pos <= 0.01 and cur_ori <= 10 and r_t >= 3600000 and r_t <= 10800000:
+            # if cur_pos <= 0.01 and cur_ori <= 10 and r_t-last_t > 60:
+                last_t = r_t
+                print("NEW RANDOM POSITION ", last_t)
+                x = np.random.choice(x_space)
+                z = np.random.choice(z_space)
+                ori = np.random.choice(ori_space)
+                p = (x,z,ori*180/math.pi)
+                start_pos.append(p)
+                self.translation_field.setSFVec3f([x,0,z])
+                self.rotation_field.setSFRotation([0,1,0,ori])
+                self.robot_node.resetPhysics()
+        
             t = self.supervisor.getTime()
             while self.supervisor.getTime() - t < 0.05:
                 # read sharp sensors outputs
@@ -78,12 +104,13 @@ class agentController():
                     end = True
                     break
 
-            next_state = self.brain.sensorsToState(dsValues) # next state - state after action
-
+            next_state = self.brain.sensorsToState(dsValues, False) # next state - state after action
+            
             if not first:   # first step won't update table before take action
                 # This happens after Take Action
                 # self.brain.updateQTable_SuttonBarto(cur_state, next_state, action)
-                self.brain.updateQTable_CenterRWD(cur_state, next_state, action)
+                self.brain.updateQTable(cur_state, next_state, action)
+                # self.brain.updateQLearning(cur_state, next_state, action)
                     
             # New cicle starts here
             cur_state = next_state                      # current state - state before action
@@ -91,7 +118,7 @@ class agentController():
             speeds = self.brain.actionToSpeed(action)   # speed of each motor
             
             t = self.supervisor.getTime()
-            while self.supervisor.getTime() - t < 0.5:
+            while self.supervisor.getTime() - t < 0.1:
                 # Take action
                 self.leftMotor.setVelocity(speeds[0])
                 self.rightMotor.setVelocity(speeds[1])
@@ -100,23 +127,21 @@ class agentController():
                     end = True
                     break    
 
-            # Reduce exploration probability after some time, firt to 0.1 and then to 0.05
-            # if t > 100000:
-            #     if t > 200000:
-            #         print("EPSILON: 0.05")
-            #         self.brain.epsilon = 0.05
-            #     else:
-            #         print("EPSISLON: 0.1")
-            #         self.brain.epsilon = 0.1
-            # else:
-            #     print("EPSILON: 0.2")
-            
-            first = False
-            if end:
-                break
+                first = False
 
+            if (round(t,0)/3600)%1000 == 0:
+                print("SAVING TABLE...")
+                self.brain.saveQTable("QTable_v6_walls_2_" +str(int(3500+round(t,0)/3600))+"h.txt")
+                print("TABLE SAVED!")        
+            # Controller exit or t = 5000h 
+            if end or round(t,0) == 18000000:
+                break
+        
+        print("Positions:", len(start_pos))
         # Enter here exit cleanup code.
-        self.brain.saveQTable("QTable_centerRWD.txt")
+        print("SAVING TABLE...")
+        self.brain.saveQTable("QTable_v6_walls_2_8500h.txt")
+        print("TABLE SAVED!")
         exit(0)
 
 agentController()

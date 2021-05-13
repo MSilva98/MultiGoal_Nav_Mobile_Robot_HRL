@@ -3,8 +3,8 @@ WorldInfo {
   coordinateSystem "NUE"
 }
 Viewpoint {
-  orientation -0.03082600449770534 0.7363905227086787 0.6758540933600585 3.190909267821362
-  position -0.8250229009027212 2.033030545083972 -0.7134904228378856
+  orientation -0.9986181369277579 0.03879351107127336 -0.03545250481555448 1.6941516817603948
+  position 0.19002547974118822 4.01379899938402 -0.486901748296628
 }
 TexturedBackground {
 }
@@ -19,7 +19,7 @@ RectangleArena {
   wallHeight 0.2
 }
 DEF epuck Robot {
-  translation -0.86 0 -0.85
+  translation -0.85 0 -0.4
   children [
     GPS {
     }
@@ -86,8 +86,8 @@ DEF epuck Robot {
         }
       ]
       endPoint DEF EPUCK_LEFT_WHEEL Solid {
-        translation -0.026000022282569292 0.019942283634700644 8.9777730613212e-06
-        rotation 0.20452577574118566 0.09690706506018767 -0.974052476922515 1.3657139822709086e-07
+        translation -0.02600002228257054 0.019942283664970747 8.977967675495261e-06
+        rotation -1 0 0 0
         children [
           DEF EPUCK_WHEEL Transform {
             rotation 0 0 1 1.57
@@ -237,8 +237,8 @@ DEF epuck Robot {
         }
       ]
       endPoint DEF EPUCK_RIGHT_WHEEL Solid {
-        translation 0.02599997450777774 0.019942185973984783 8.891194542475513e-06
-        rotation 0.15361629469639804 -0.09412789727660105 0.9836371144675433 1.4292691717483762e-07
+        translation 0.02599997450777615 0.019942185770558334 8.889871675312621e-06
+        rotation -1 0 0 0
         children [
           Transform {
             rotation 0 1 0 3.14159
@@ -1710,7 +1710,7 @@ Wall {
   size 1.41 0.2 0.01
 }
 Wall {
-  translation -0.7 0 0
+  translation -0.695 0 -6.74634e-14
   rotation 0 1 0 1.5708
   name "wall(3)"
   size 1.41 0.2 0.01

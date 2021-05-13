@@ -4,7 +4,7 @@ import math
 import json
 
 class Agent():
-    def __init__(self, alpha=0.3, beta=0.3, ro=0, epsilon=0.1, RWDTable=None, Qtable=None):
+    def __init__(self, alpha=0.5, beta=0.05, ro=0, epsilon=0.2, sensors_states=4, nr_sensors=6, RWDTable=None, Qtable=None):
         self.alpha = alpha
         self.beta = beta
         self.ro = ro
@@ -12,8 +12,8 @@ class Agent():
         # Actions the agent can perform
         # Front, Light Left, Light Right, Mid Left, Mid Right, Left, Right, Hard Left, Hard Right
         self.actions = ["F", "LL", "LR", "ML", "MR", "L", "R", "HL", "HR"]
-        self.sensors_states = 4 # 4 discretization states -> 1 - Very Close, 2 - Close, 3 - Good, 4 - Far
-        self.nr_sensors = 6     # 6 sharp sensors -> sharp0, sharp1, sharp2, sharp3, sharp4, sharp5 -> front, front left, left, front right, right, rear
+        self.sensors_states = sensors_states # 4 discretization states -> 1 - Very Close, 2 - Close, 3 - Good, 4 - Far
+        self.nr_sensors = nr_sensors         # 6 sharp sensors -> sharp0, sharp1, sharp2, sharp3, sharp4, sharp5 -> front, front left, left, front right, right, rear
         # States will go from (1,1,1,1,1,1) to (4,4,4,4,4,4) = (front, front left, left, front right, right, rear)
         # state 1    (1,1,1,1,1,1)
         # state 2    (1,1,1,1,1,2)
@@ -25,16 +25,6 @@ class Agent():
         # state 4096 (4,4,4,4,4,4)
         self.randomAct = 0  # control if random action was choosen (1 - random, 0 - non-random)
 
-        if Qtable == None:
-            self.QTable = {}
-            for state in itertools.product(range(1,self.sensors_states+1), repeat=self.nr_sensors):
-                self.QTable[str(state)] = {}
-                for a in self.actions:
-                    self.QTable[str(state)][a] = 0  # each state will have all actions
-        else:
-            with open(Qtable, "r") as jsonFile:
-                self.QTable = json.load(jsonFile)
-
         if RWDTable == None:
             self.RwdTable = {}
             for state in itertools.product(range(1,self.sensors_states+1), repeat=self.nr_sensors):
@@ -42,6 +32,26 @@ class Agent():
         else:
             with open(RWDTable, "r") as jsonFile:
                 self.RwdTable = json.load(jsonFile)
+
+        if Qtable == None:
+            self.QTable = {}
+            if RWDTable == None:
+                for state in itertools.product(range(1,self.sensors_states+1), repeat=self.nr_sensors):
+                    self.QTable[str(state)] = {}
+                    for a in self.actions:
+                        self.QTable[str(state)][a] = -500  # each state will have all actions
+            else:
+                for state in itertools.product(range(1,self.sensors_states+1), repeat=self.nr_sensors):
+                    rwd = self.RwdTable[str(state)]
+                    if rwd == 0:
+                        rwd = -500
+                        
+                    self.QTable[str(state)] = {}
+                    for a in self.actions:
+                        self.QTable[str(state)][a] = rwd  # each state will have all actions
+        else:
+            with open(Qtable, "r") as jsonFile:
+                self.QTable = json.load(jsonFile)
 
     def chooseAction(self, state):
         action = ''
@@ -51,6 +61,9 @@ class Agent():
         else:
             # https://thispointer.com/python-how-to-get-all-keys-with-maximum-value-in-a-dictionary/
             # Select the action with highest q_value (if more than one with the same max q_value then select a random one from those)
+            # def notZero(x):
+            #     return x[1] if x[1] != 0 else -500
+            # maxAction = max(self.QTable[state].items(), key=notZero)
             maxAction = max(self.QTable[state].items(), key=lambda x: x[1])
             listofmaxActions = [k for k, v in self.QTable[state].items() if v == maxAction[1]]
             action = np.random.choice(listofmaxActions)
@@ -65,17 +78,33 @@ class Agent():
                 highest_q = nxt_q
         return highest_q
     
-    def discretizeSensor(self, sensor_val):
-        if sensor_val > 0 and sensor_val < 0.07:
-            return 1
-        elif sensor_val >= 0.07 and sensor_val < 0.13:
-            return 2
-        elif sensor_val >= 0.13 and sensor_val < 0.20:
-            return 3
-        elif sensor_val >= 0.20:
-            return 4
-        else:   # bad sensor value
-            return -1
+    def discretizeSensor(self, sensor_val, sensors_4):
+        if sensors_4:
+            if sensor_val > 0 and sensor_val < 0.07:
+                return 1
+            elif sensor_val >= 0.07 and sensor_val < 0.13:
+                return 2
+            elif sensor_val >= 0.13 and sensor_val < 0.20:
+                return 3
+            elif sensor_val >= 0.20:
+                return 4
+            else:   # bad sensor value
+                return -1
+        else:
+            if sensor_val > 0 and sensor_val < 0.06:
+                return 1
+            elif sensor_val >= 0.06 and sensor_val < 0.10:
+                return 2
+            elif sensor_val >= 0.10 and sensor_val < 0.15:
+                return 3
+            elif sensor_val >= 0.15 and sensor_val < 0.20:
+                return 4
+            elif sensor_val >= 0.20 and sensor_val < 0.25:
+                return 5
+            elif sensor_val >= 0.25:
+                return 6
+            else:   # bad sensor value
+                return -1
     
     def actionToSpeed(self, action):
         if action == "F":
@@ -101,7 +130,6 @@ class Agent():
 
     def sensorVoltageToDistance_Webots(self, voltage):
         # from webots documentation
-        # Add 0.03 to compensate the sensor offset to the robot center
         d = ((0.1594*pow(voltage,-0.8533))-0.02916)        
         return d if d <= 0.3 else 0.3
 
@@ -119,53 +147,156 @@ class Agent():
         
         return d if d <= 0.3 else 0.3
 
-    # Pos -> -0.11 to 0.11
+    # X and Y -> -0.11 to 0.11
     # Ori -> -1.57 to 1.57
-    def reward(self, pos, ori):
-        # Reward from Diogo's dissertation
-        # return -500*(pow(pos,2)+0.0159*pow(ori,2))+2
-        
-        # # newRWD
-        # if (pos >= 0 and ori >= 0) or (pos <= 0 and ori <= 0):  # Cases when robot is moving to the center
-        #     return -500*(pow(pos,2)+0.0159*pow(ori,2))+2
+    # Direction -> 0 is right, 1 is left
+    # Direction represents a corner to the left or a corner to the right
+    def reward(self, x, y, ori):
+        ########
+        ## V1 ##
+        ########
+        # # Trimm angle to 0 <-> 90
+        # abs_ori = abs(ori)
+        # if abs_ori > math.pi/2:
+        #     abs_ori = math.pi-abs_ori
+        # # Right direction and rotated right or Left direction and rotated left
+        # if (direction == 0 and ori < 0) or (direction == 1 and ori > 0):
+        #     return (-600*(pow(x,2)+pow(y,2))-1)/abs_ori
+        # else:                                   # Aligned to center or rotated to the wrong direction
+        #     # WORST CASES
+        #     return (-600*(pow(x,2)+pow(y,2))-10)*abs_ori-20   # The bigger the angle (up to 90) the worse
+
+        ########
+        ## V2 ##
+        ########
+        # Trimm angle to 0 <-> 90
+        # abs_ori = abs(ori)
+        # if abs_ori > math.pi/2:
+        #     abs_ori = math.pi-abs_ori
+        # if ori < 0:
+        #     # Rotated right
+        #     return (-600*(0.5*pow(x,2)+pow(y,2))-1)/abs_ori
         # else:
-        #     return -500*(pow(pos,2)+0.0159*pow(ori,2))-2        # Cases when it is walking away
+        #     # Aligned to center or rotated to the wrong direction
+        #     return (-600*(pow(x,2)+pow(y,2))-10)*abs_ori-20
+
+        # ########
+        # ## V3 ##
+        # ########
+        # abs_ori = abs(ori)
+        # if abs_ori > math.pi/2:
+        #     abs_ori = math.pi-abs_ori
+        # if y >= 0.15:    # Corridor zone - Section 1
+        #     # Corridor reward
+        #     if (x >= 0 and ori >= 0) or (x <= 0 and ori <= 0):  # Cases when robot is moving to the center
+        #         return -200*(2*pow(x,2)+0.01*pow(ori,2))+4
+        #     else: # Cases when it is walking away
+        #         return -200*(pow(x,2)+0.02*pow(ori,2))-6 
+        # else:   # Sections 2 and 3
+        #     if x >= -0.05 and x <= 0.10 and y >= -0.05 and y <= 0.10 and ori < 0:   # Section 3 rotating right
+        #         return (-600*(pow(x,2)+1.5*pow(y,2))-1)/abs_ori
+        #     else:                                                               # Section 2 close to walls
+        #         return (-600*(pow(x,2)+pow(y,2))-10)*abs_ori-50 
         
-        # # V2
-        # r = -150*(pow(pos,2)+0.0159*pow(ori,2))
-        # if (pos >= 0 and ori >= 0) or (pos <= 0 and ori <= 0):  # Cases when robot is moving to the center
-        #     return r+2
-        # else: # Cases when it is walking away
-        #     return r-8        
+        ########
+        ## V4 ##
+        ########
+        # abs_ori = round(abs(ori)*180/math.pi,1)
+        # if abs_ori > 90:
+        #     abs_ori = 180-abs_ori
+        # if y >= 0.15:    # Corridor zone - Section 1
+        #     # Corridor reward
+        #     if (x >= 0 and ori >= 0) or (x <= 0 and ori <= 0):  # Cases when robot is moving to the center
+        #         return -200*(2*pow(x,2)+0.01*pow(ori,2))+4
+        #     else: # Cases when it is walking away
+        #         return -200*(pow(x,2)+0.02*pow(ori,2))-6 
+        # else:   # Sections 2 and 3
+        #     if x >= -0.05 and x <= 0.10 and y >= -0.05 and y <= 0.10 and ori < 0:   # Section 3 rotating right
+        #         return (-600*(pow(x,2)-0.05*y))+abs_ori/10
+        #     else:                                                                   # Section 2 close to walls
+        #         return (-600*(pow(x,2)-0.05*y)-10)-abs_ori/10
 
-        # V3
-        if (pos >= 0 and ori >= 0) or (pos <= 0 and ori <= 0):  # Cases when robot is moving to the center
-            return -200*(2*pow(pos,2)+0.01*pow(ori,2))+4
-        else: # Cases when it is walking away
-            return -200*(pow(pos,2)+0.02*pow(ori,2))-6     
+        ########
+        ## V5 ##
+        ########
+        # abs_ori = round(abs(ori)*180/math.pi,1)
+        # if abs_ori > 90:
+        #     abs_ori = 180-abs_ori
+        # if y >= 0.15:    # Corridor zone - Section 1
+        #     # Corridor reward
+        #     if (x >= 0 and ori >= 0) or (x <= 0 and ori <= 0):  # Cases when robot is moving to the center
+        #         return -200*(2*pow(x,2)+0.01*pow(ori,2))+4
+        #     else: # Cases when it is walking away
+        #         return -200*(pow(x,2)+0.02*pow(ori,2))-6 
+        # else:   # Sections 2 and 3
+        #     d = -600*(1.5*pow(x,2)+pow(y-0.01,2))
+        #     if x >= -0.1 and x <= 0.10 and y >= -0.1 and y <= 0.10 and ori < 0:   # Section 3 rotating right
+        #         return (d+5)+abs_ori/10
+        #     else:                                                                   # Section 2 close to walls
+        #         return (d-30)-abs_ori/10 
 
-        # # V4
-        # if (pos >= 0 and ori >= 0) or (pos <= 0 and ori <= 0):  # Cases when robot is moving to the center
-        #     return -300*(4*pow(pos,2)+0.02*pow(ori,2))+4
-        # else: # Cases when it is walking away
-        #     return -300*(4*pow(pos,2)+0.05*pow(ori,2))+4    # Penalizes much harder rotations
+        ########
+        ## V6 ##
+        ########
+        # abs_ori = round(abs(ori)*180/math.pi,1)
+        # if abs_ori > 90:
+        #     abs_ori = 180-abs_ori        
+        # # Danger zone of corridor
+        # if x <= -0.05 or y <= -0.1 or (y >= 0.1 and x >= 0.1) or ori >= 0:
+        #     return (-1000*(2*pow(x,2)+2*pow(y,2))-20)-abs_ori
+        # else:
+        #     return (-600*(pow(x-0.11,2)+1.5*pow(y,2))+5)+abs_ori/10    
 
-        
-    def sensorsToState(self, sensor_values):
-        return str(tuple([self.discretizeSensor(round(self.sensorVoltageToDistance(v),2)) for v in sensor_values]))
+        ######################
+        ## V7 with corridor ##
+        ######################
+        if y >= 0.15:    # Corridor zone - Section 1
+            # Corridor reward
+            if (x >= 0 and ori >= 0) or (x <= 0 and ori <= 0):  # Cases when robot is moving to the center
+                return -400*(4*pow(x,2)+0.02*pow(ori,2))+15
+            else: # Cases when it is walking away
+                return -400*(4*pow(x,2)+0.03*pow(ori,2))-10 
+        else:
+            abs_ori = round(abs(ori)*180/math.pi,1)
+            if abs_ori > 90:
+                abs_ori = 180-abs_ori        
+            # Danger zone of corridor -> close to inner or outer walls or rotated to the left
+            if (x <= -0.07 or y <= -0.07 or (y >= 0.1 and x >= 0.1)) and ori > 0:
+                return (-500*(2*pow(x,2)+2*pow(y,2))-40)-abs_ori
+            else:
+                # Rotated to align or aligned with y axis
+                if ori <= 0 and ((y <= 0 and ori <= -1.57) or (y >= 0 and ori >= -1.57)):
+                    return (-400*(pow(x-0.11,2)+2*pow(y,2))+10)+abs_ori/20  # Higher angle better reward
+                # Not aligned and rotated away
+                else:
+                    return (-400*(pow(x-0.11,2)+2*pow(y,2))-8)+abs_ori/10   # Higher angle better reward
+
+    def sensorsToState(self, sensor_values,sensors_4):
+        return str(tuple([self.discretizeSensor(round(self.sensorVoltageToDistance(v),2),sensors_4) for v in sensor_values]))
 
     # sensor_values organized from sharp0 to sharp5
     # [front, front left, left, front right, right, rear]
-    def fillRwdTable(self, sensor_values, pos, ori, prev_state):
+    def fillRwdTable(self, sensor_values, pos, ori, prev_state, sensors_4):        
         dists = [round(self.sensorVoltageToDistance(v),2) for v in sensor_values]
-        state = self.sensorsToState(sensor_values)
+        state = self.sensorsToState(sensor_values, sensors_4)
         rwd = round(self.reward(pos[0], ori),4)
-        print("POS:", pos[0], pos[2], " ORI:", round(ori*180/math.pi,1))
+        print("POS:", pos[0], pos[2], " ORI:", round(ori*180/math.pi,1), ori, state)
+        degrees = round(ori*180/math.pi,0)-90
+        if degrees < -180:
+            degrees += 360
         if prev_state != state:
-            with open("rwd_log.txt", "a+") as f:
-                f.write("Prev State: " + prev_state + "\nCur State: " + state + "\nDists:" + str(dists) + "\nPos:" + str(pos[0]) + " ORI:" + str(ori) + " " + str(ori*180/math.pi) + "\nRWD:" + str(rwd) + "\n")
-            prev_state = state
-        self.RwdTable[state] = rwd
+            # Prevent RWD Override only write new RWD if it's better than previous or current RWD is zero
+            r = self.RwdTable[state]
+            if r != 0:
+                if r < rwd:
+                    self.RwdTable[state] = rwd
+                    with open("rwd_log.txt", "a+") as f:
+                       f.write("Prev State: " + prev_state + "\nCur State: " + state + "\nDists:" + str(dists) + "\nPos: (" + str(pos[0]) + ", " + str(pos[2]) + ") ORI:" + str(ori) + " " + str(ori*180/math.pi) + " ORI-90: " + str(degrees) + "\nRWD:" + str(rwd) + "\n")
+            else:
+                self.RwdTable[state] = rwd
+                with open("rwd_log.txt", "a+") as f:
+                    f.write("Prev State: " + prev_state + "\nCur State: " + state + "\nDists:" + str(dists) + "\nPos: (" + str(pos[0]) + ", " + str(pos[2]) + ") ORI:" + str(ori) + " " + str(ori*180/math.pi) + " ORI-90: " + str(degrees) + "\nRWD:" + str(rwd) + "\n")
+            prev_state = state                
         return state
         
     # sensor_values organized from sharp0 to sharp5
@@ -173,14 +304,16 @@ class Agent():
     # R-Learning implementation from
     # Average Reward Reinforcement Learning: Foundations, Algorithms, and Empirical Results SRIDHAR MAHADEVAN 
     # alpha and beta changed: alpha - adjust relative action values R(s,a), beta - ajust average reward
-    # Low alpha is better than high alpha (default 0.05)
-    # High beta is better than low beta   (default 0.5)
+    # Low beta is better than high beta (default 0.05)
+    # High alpha is better than low alpha   (default 0.5)
     def updateQTable(self, cur_state, next_state, action):
         rwd = self.RwdTable[next_state]
         cur_q = self.QTable[cur_state][action]
         new_q = cur_q*(1-self.alpha)+self.alpha*(rwd-self.ro+self.maxQ(next_state))
         self.QTable[cur_state][action] = new_q
-        print(" STATE:", cur_state, " Action:", action, " RWD:", rwd)
+        print(" STATE:", cur_state, " N_STATE:", next_state, " Action:", action, " RWD:", rwd, " Rnd:", self.randomAct)
+        # with open("training_log.txt", "a+") as f:
+        #     f.write("STATE:" + cur_state + " Action:" + action + " RWD:" + str(rwd) + "\n")
         if new_q == self.maxQ(cur_state) and not self.randomAct:
             self.ro = self.ro*(1-self.beta)+self.beta*(rwd+self.maxQ(next_state)-self.maxQ(cur_state))
     
@@ -190,16 +323,23 @@ class Agent():
         cur_q = self.QTable[cur_state][action]
         new_q = cur_q+self.alpha*(rwd-self.ro+self.maxQ(next_state)-cur_q)
         self.QTable[cur_state][action] = new_q
-        print(" STATE:", cur_state, " Action:", action, " RWD:", rwd)
+        print("STATE:", cur_state, " N STATE:", next_state, " Action:", action, " RWD:", rwd)
         if new_q == self.maxQ(cur_state) and not self.randomAct:
             self.ro = self.ro+self.beta*(rwd-self.ro+self.maxQ(next_state)-self.maxQ(cur_state))
-    
-    def saveQTable(self):
-        with open("QTable.txt", "w+") as jsonFile:
+
+    def updateQLearning(self, cur_state, next_state, action):
+        rwd = self.RwdTable[next_state]
+        cur_q = self.QTable[cur_state][action]
+        new_q = cur_q+self.alpha*(rwd+0.9*self.maxQ(next_state)-cur_q)
+        self.QTable[cur_state][action] = new_q
+        print("STATE:", cur_state, " N STATE:", next_state, " Action:", action, " Q_val:", new_q)
+
+    def saveQTable(self, name):
+        with open(name, "w+") as jsonFile:
             json.dump(self.QTable, jsonFile)
 
-    def saveRwdTable(self):
-        with open("RwdTable.txt", "w+") as jsonFile:
+    def saveRwdTable(self, name):
+        with open(name, "w+") as jsonFile:
             json.dump(self.RwdTable, jsonFile)
 
 

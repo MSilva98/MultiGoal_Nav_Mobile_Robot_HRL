@@ -1,5 +1,5 @@
-"""fill_QTable controller."""
-# python script to collect data from Sharp and infrared distance sensors
+"""fill_RwdTable controller."""
+# python script to fill reward Table for corridor in QLearning_giant_corridor.wbt
 
 # You may need to import some classes of the controller module. Ex:
 from controller import Robot, Motor, DistanceSensor, Supervisor
@@ -17,7 +17,7 @@ class fill_RwdTable():
         self.supervisor = Supervisor()
 
         # Robot reinforcement learning brain
-        self.brain = Agent()
+        self.brain = Agent(sensors_states=6)
 
         # node to use supervisor functions
         self.robot_node = self.supervisor.getFromDef("epuck")
@@ -54,16 +54,12 @@ class fill_RwdTable():
         # - perform simulation steps until Webots is stopping the controller
         prev_state = "(1, 1, 1, 1, 1, 1)"
         # Values from left wall to right wall of corridor
-        # x_vals = [x/1000 for x in range(-110, 111)] # 1mm
         x_vals = [x/100 for x in range(-11, 12)]  # 1cm
-        # Values 4cm up to 33cm of front wall 1cm apart
-        z_vals = [z/100 for z in range(-146, -116)] # 4 to 33cm
-        # Middle of corridor
-        z_vals.append(0) 
-        # 360 degrees in radians
-        rot_vals = [x*math.pi/180 for x in range(0,361)] # rotate only 180 degrees
-        
-        # for lst in zlist:
+        # Values from "middle" to wall on the back in a 3m long corridor
+        z_vals = [z/100 for z in range(115, 147)]
+        # 360 degrees in radians, 5 degrees each rotation
+        rot_vals = [x*math.pi/180 for x in range(0,360)]
+
         for z in z_vals:
             for x in x_vals:
                 # Set robot position
@@ -71,40 +67,52 @@ class fill_RwdTable():
                 for rot in rot_vals:
                     # Set robot rotation
                     self.rotation_field.setSFRotation([0,1,0,rot])
-
+                    self.robot_node.resetPhysics()
                     t = self.supervisor.getTime()
                     # 0.05 guarantees a read of actual values of the sensors
                     while self.supervisor.getTime() - t < 0.05:
-                        # print("BF:",self.supervisor.getTime())
                         # read sharp sensors outputs
                         dsValues = []
                         for i in range(len(self.ds)):
                             dsValues.append(self.ds[i].getValue())
-                        # print("AF:",self.supervisor.getTime())
 
                         # controller termination
                         if self.supervisor.step(self.timestep) == -1:
                             quit()
                         
-                    cur_pos = [round(p,4) for p in self.translation_field.getSFVec3f()]
-                    cur_ori = round(self.rotation_field.getSFRotation()[3],4)
+                    cur_pos = [x,0,z]
+                    cur_ori = rot
 
                     # Trimm rotation between -90 and 90
                     # 100 degrees at x = -0.028 is the same as -80 at x = 0.028
                     # Important when calculating RWD
-                    if cur_ori*180/math.pi < -90:
-                        cur_ori += math.pi
-                        cur_pos[0] = -cur_pos[0]
-                    if cur_ori*180/math.pi > 90:
-                        cur_ori -= math.pi      
-                        cur_pos[0] = -cur_pos[0]               
+                    # z < 1.35 so that robot gets closer to dead-end
+                    if z < 1.35:
+                        if cur_ori > math.pi:
+                            cur_ori -= 2*math.pi
+                        if cur_ori < -math.pi:
+                            cur_ori += 2*math.pi
+                        if cur_ori == -math.pi:
+                            cur_ori = math.pi
+                        if cur_ori == -0.0:
+                            cur_ori = 0.0
+
+                        if cur_ori*180/math.pi < -90:
+                            cur_ori += math.pi
+                            cur_pos[0] = -cur_pos[0]
+                        if cur_ori*180/math.pi > 90:
+                            cur_ori -= math.pi      
+                            cur_pos[0] = -cur_pos[0]               
                     
+                    cur_pos[0] = round(cur_pos[0],2)
+                    cur_ori = round(cur_ori,4)
+
                     # add initial reward to that state in QTable
                     # dsValues = [front, front left, left, front right, right, rear]
-                    prev_state = self.brain.fillRwdTable(dsValues, cur_pos, cur_ori, prev_state)
+                    prev_state = self.brain.fillRwdTable(dsValues, cur_pos, cur_ori, prev_state, False)
         
         # Enter here exit cleanup code.
-        self.brain.saveRwdTable("RwdTable_v2_1cm.txt")
+        self.brain.saveRwdTable("RwdTable_v6_walls_2.txt")
         exit(0)
 
 fill_RwdTable()
