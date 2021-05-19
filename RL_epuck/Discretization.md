@@ -8,10 +8,12 @@ distances = [4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 2
 4 states -> very close, close, good, far
 
 **Distances Discretization**
-- Very close:  $<$ 7
-- Close: 7 $\le$ d $<$ 13
-- Good: 13 $\le$ d $<$ 20
-- Far:  $>$ 20
+- Very close:  $<$ 6
+- Close: 6 $\le$ d $<$ 10
+- OK: 10 $\le$ d $<$ 15
+- Good: 15 $\le$ d $<$ 20
+- Very Good: 20 $\le$ d $<$ 25
+- Far:  $>$ 25
 
 
 ## Robot actions discretization
