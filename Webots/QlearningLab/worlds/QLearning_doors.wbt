@@ -3,8 +3,8 @@ WorldInfo {
   coordinateSystem "NUE"
 }
 Viewpoint {
-  orientation -0.9984468121392918 0.041207246595543465 -0.03749568184337922 1.57203067909024
-  position 0.28314653106848897 4.195620762274341 0.007101106222696579
+  orientation 1 0 0 4.71238898038469
+  position 0.0012188874104337383 4.09601513380942 1.248401074072644e-05
 }
 TexturedBackground {
 }
@@ -86,7 +86,7 @@ DEF epuck Robot {
         }
       ]
       endPoint DEF EPUCK_LEFT_WHEEL Solid {
-        translation -0.02600002228175282 0.01994228770265967 9.003887085368029e-06
+        translation -0.02600002228175151 0.019942288009294904 9.005852576634533e-06
         rotation -1 0 0 0
         children [
           DEF EPUCK_WHEEL Transform {
@@ -237,7 +237,7 @@ DEF epuck Robot {
         }
       ]
       endPoint DEF EPUCK_RIGHT_WHEEL Solid {
-        translation 0.025999974506979044 0.019942180057275497 8.852637387625546e-06
+        translation 0.0259999745069771 0.01994217969146371 8.850247896079767e-06
         rotation -1 0 0 0
         children [
           Transform {
@@ -1791,8 +1791,7 @@ Wall {
   size 0.55 0.2 0.01
 }
 DEF wallDoors Wall {
-  translation -0.155 0 0
-  rotation 0 1 0 1.57
+  translation 0 0 -0.155
   name "wallDoors"
   size 0.3 0.2 0.01
 }

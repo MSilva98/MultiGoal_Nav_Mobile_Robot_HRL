@@ -22,9 +22,9 @@
     ####################
     #### HIGH LEVEL ####
     ####################
-    Constraints:
-        - robot HAS TO start on corridor (does not detect corners or doors when started inside them)
-        - it does not know which way is going
-        - MAP HAS SOME CONSTRAINTS TOO:
-            - No "single wall" -> that is, must exist some corridor between each doors or corners
-            - Goal can't be too close to wall since robot might turn around and not reach it
+
+
+Dynamic learning
+    - Faz sentido o nivel de exploração em todas as portas ou apenas nas que ele passou e esta bloqueado??
+        - Ao ter sempre exploração isto não pode ser considerado um "run_agent"... é apenas um updateQTable
+    - Certo nível de exploração necessário para verificar se um novo caminho abriu ou não (e-greedy a 0.1 maybe)

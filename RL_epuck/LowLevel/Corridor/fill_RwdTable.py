@@ -56,7 +56,7 @@ class fill_RwdTable():
         # Values from left wall to right wall of corridor
         x_vals = [x/100 for x in range(-11, 12)]  # 1cm
         # Values from "middle" to wall on the back in a 3m long corridor
-        z_vals = [z/100 for z in range(115, 147)]
+        z_vals = [z/100 for z in range(110, 147)]
         # 360 degrees in radians, 5 degrees each rotation
         rot_vals = [x*math.pi/180 for x in range(0,360)]
 
@@ -112,7 +112,7 @@ class fill_RwdTable():
                     prev_state = self.brain.fillRwdTable(dsValues, cur_pos, cur_ori, prev_state, False)
         
         # Enter here exit cleanup code.
-        self.brain.saveRwdTable("RwdTable_v6_walls_2.txt")
+        self.brain.saveRwdTable("RwdTable_v6.txt")
         exit(0)
 
 fill_RwdTable()

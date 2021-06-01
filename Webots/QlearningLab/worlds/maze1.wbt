@@ -3,8 +3,8 @@ WorldInfo {
   coordinateSystem "NUE"
 }
 Viewpoint {
-  orientation 0.9999984529720203 -0.0012375608159407574 -0.0012499987172560915 4.702387433432876
-  position 3.5821230681843773e-07 4.012706143049512 -0.03981517455556464
+  orientation 1 0 0 4.71238898038469
+  position 4.700822731309217e-19 3.979329768835952 -1.550422058239483e-14
 }
 TexturedBackground {
 }
@@ -86,7 +86,7 @@ DEF epuck Robot {
         }
       ]
       endPoint DEF EPUCK_LEFT_WHEEL Solid {
-        translation -0.026000022282569243 0.019942283634705304 8.97777309127517e-06
+        translation -0.026000022282569257 0.019942283634705304 8.977773091273435e-06
         rotation -1 0 0 0
         children [
           DEF EPUCK_WHEEL Transform {
@@ -237,7 +237,7 @@ DEF epuck Robot {
         }
       ]
       endPoint DEF EPUCK_RIGHT_WHEEL Solid {
-        translation 0.025999974507777766 0.019942185973978052 8.891194498707616e-06
+        translation 0.025999974507777628 0.019942185973978052 8.891194498704333e-06
         rotation -1 0 0 0
         children [
           Transform {

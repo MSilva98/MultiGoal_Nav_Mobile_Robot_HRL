@@ -28,8 +28,6 @@ class agentController():
         self.rightBrain = lowLvlAgent(epsilon=0, Qtable="./LowLevelTables/QTable_right_all.txt") # QTable to go right
         # Symetry can be used instead (which is better computationally?)
         self.leftBrain  = lowLvlAgent(epsilon=0, Qtable="./LowLevelTables/QTable_left_all.txt")  # QTable to go left
-
-        self.highLevel = highLvlAgent(alpha=0.3, gamma=0.99, episodes=200, epsilon=0.3, statesFile="maze1.txt")
        
         # get the time step of the current world.
         self.timestep = 32
@@ -69,6 +67,9 @@ class agentController():
         front    = False
         corridor = True
 
+        #TMP
+        corners = False
+
         # HighLvl
         first      = True
         next_State = 0
@@ -76,45 +77,101 @@ class agentController():
         highAction = ''
         last_t = 0
         nr_episodes = 0
-        init_pos1 = [0.85,0,0.85]
-        init_ori1 = [0,1,0,1.57]
-        init_pos2 = [-0.85,0,0.65]
-        init_ori2 = [0,1,0,0]
-        init_pos3 = [-0.65,0,-0.85]
-        init_ori3 = [0,1,0,-1.57]
-        init_pos4 = [0.85,0,-0.65]
-        init_ori4 = [0,1,0,3.14]
+        
+        # Select maze
+        maze = 1
 
-        f = open("failed_states.txt", "w+")
+        # Robot Start Positions
+        if maze == 1:
+            # MAZE 1
+            self.highLevel = highLvlAgent(alpha=0.3, gamma=0.99, episodes=300, epsilon=0.3, statesFile="./mazes/maze1.txt")
+            init_pos1 = [0.85,0,0.85]
+            init_ori1 = [0,1,0,1.57]
+            init_pos2 = [-0.85,0,0.65]
+            init_ori2 = [0,1,0,0]
+            init_pos3 = [-0.65,0,-0.85]
+            init_ori3 = [0,1,0,-1.57]
+            init_pos4 = [-0.15,0,-0.55]
+            init_ori4 = [0,1,0,-1.57]
+            Qtable_name = "QTable_HighLevel_maze1.txt"
+            avg_lowLvl_name = "avgLowLvlTimes_maze1.txt"
+            visitedStates_name = "visited_states_maze1.txt"
+            paths_name = "steps_maze1.txt"
+            rewardSum_name = "rwdSum_maze1.txt"
+        else:
+            # MAZE 2
+            self.highLevel = highLvlAgent(alpha=0.3, gamma=0.99, episodes=500, epsilon=0.3, statesFile="./mazes/maze2.txt")
+            init_pos1 = [0.8,0,1.15]
+            init_ori1 = [0,1,0,1.57]
+            init_pos2 = [-1.15,0,0.6]
+            init_ori2 = [0,1,0,0]
+            init_pos3 = [-0.7,0,-1.15]
+            init_ori3 = [0,1,0,-1.57]
+            init_pos4 = [1.15,0,-0.8]
+            init_ori4 = [0,1,0,3.14]
+            Qtable_name = "QTable_HighLevel_maze2.txt"
+            avg_lowLvl_name = "avgLowLvlTimes_maze2.txt"
+            visitedStates_name = "visited_states_maze2.txt"
+            paths_name = "steps_maze2.txt"
+            rewardSum_name = "rwdSum_maze2.txt"
+
+        # Set robot intial position
+        self.translation_field.setSFVec3f(init_pos1)
+        self.rotation_field.setSFRotation(init_ori1)
+        self.robot_node.resetPhysics()
+
+        # Metrics
+        visited_states = dict()
+        paths = dict()
+        statesPath = []
+        avg_lowLvlTimes = []
+        rewardSum = [0]*self.highLevel.episodes
 
         while self.robot.step(self.timestep) != -1:     
             # Current position of robot each timestep
             cur_pos = [round(p,2) for p in self.translation_field.getSFVec3f()]
-            cur_ori = round(self.rotation_field.getSFRotation()[3],4)
+            cur_ori = round(self.rotation_field.getSFRotation()[3],2)
 
             # Each timestep check if robot reached goal
-            if self.highLevel.reachedGoal((cur_pos[0], cur_pos[2])):
+            if self.highLevel.reachedGoal((cur_pos[0], cur_pos[2], cur_ori)):
                 r_t = round(self.robot.getTime(), 2)
-                next_State = self.highLevel.getState((cur_pos[0], cur_pos[2]))
+                next_State = self.highLevel.getState((cur_pos[0], cur_pos[2], cur_ori), checkingGoal=True)
+                if next_State != '':
+                    if next_State not in visited_states:
+                        visited_states[next_State] = 1
+                    else:
+                        visited_states[next_State] += 1
+                else:
+                    print("SHOULD HAVE REACHED GOAL", (cur_pos[0], cur_pos[2], cur_ori))
+                    break
+
+                paths[nr_episodes] = statesPath.copy()
+                rewardSum[nr_episodes] += self.highLevel.reward(next_State, r_t-last_t)
+
                 if not first:
                     self.highLevel.updateQTable(cur_State, next_State, highAction, r_t-last_t)
                 else:
+                    print("THIS SHOULD NEVER HAPPPEN DURING TRAINING")
                     highAction = self.highLevel.chooseAction(next_State)
                     self.highLevel.updateQTable(next_State, next_State, highAction, r_t-last_t)
+
+                avg_lowLvlTimes.append(r_t-last_t)
                 last_t = r_t
 
-                # RESET ROBOT
+                # Reset Robot to initial position
                 cur_State  = 0
                 next_State = 0
                 first = True
+                statesPath.clear()
+
                 nr_episodes += 1
-                if nr_episodes < 25:
+                if nr_episodes < self.highLevel.episodes/4:
                     self.translation_field.setSFVec3f(init_pos1)
                     self.rotation_field.setSFRotation(init_ori1)
-                elif nr_episodes < 50:
+                elif nr_episodes < self.highLevel.episodes/2:
                     self.translation_field.setSFVec3f(init_pos2)
                     self.rotation_field.setSFRotation(init_ori2)
-                elif nr_episodes < 75:
+                elif nr_episodes < self.highLevel.episodes*(3/4):
                     self.translation_field.setSFVec3f(init_pos3)
                     self.rotation_field.setSFRotation(init_ori3)
                 else:
@@ -125,7 +182,7 @@ class agentController():
 
             t = self.robot.getTime()
             while self.robot.getTime() - t < 0.05:
-                # read sharp sensors outputs
+                # read Sharp sensors outputs
                 dsValues = []
                 for i in range(len(self.ds)):
                     dsValues.append(self.ds[i].getValue())
@@ -136,28 +193,19 @@ class agentController():
                     break
 
             # Get distances of sensors' voltages
-            F  = self.frontBrain.sensorVoltageToDistance(dsValues[0])  # Front
-            FL = self.frontBrain.sensorVoltageToDistance(dsValues[1])  # Front Left
-            L  = self.frontBrain.sensorVoltageToDistance(dsValues[2])  # Left
-            FR = self.frontBrain.sensorVoltageToDistance(dsValues[3])  # Front Right
-            R  = self.frontBrain.sensorVoltageToDistance(dsValues[4])  # Right
-            B  = self.frontBrain.sensorVoltageToDistance(dsValues[5])  # Back
+            F, FL, L, FR, R, B = [self.frontBrain.sensorVoltageToDistance(dsVal) for dsVal in dsValues]
 
-            # DETECT DOOR OR CORNER
-            # Left Right Door
-            if FR == 0.3 and FL == 0.3 and corridor:
-                # highAction = np.random.choice(["left", "right"])
-                
+            if corridor:
                 # High Level Training
                 r_t = round(self.robot.getTime(), 2)
                 # State reached after last highAction (each position has a margin of 3cm since the robot won't always do the same path)
-                next_State = self.highLevel.getState((cur_pos[0], cur_pos[2]))
-                print("LR", next_State)
+                next_State = self.highLevel.getState((cur_pos[0], cur_pos[2], cur_ori))
                 
-                if next_State == '':
-                    f.write(str((cur_pos[0], cur_pos[2], cur_ori)) + " in LR DOOR\n")
-                    highAction = np.random.choice(["left", "right"])
-                else: 
+                # Robot in door entrance and facing door
+                if next_State != '':
+                    statesPath.append(next_State)
+                    rewardSum[nr_episodes] += self.highLevel.reward(next_State, r_t-last_t)
+
                     # Updates occur only after executing the first highLevel action (so that cur_state and next_state exist)
                     if not first:
                         self.highLevel.updateQTable(cur_State, next_State, highAction, r_t-last_t)
@@ -166,114 +214,63 @@ class agentController():
                     cur_State = next_State
                     highAction = self.highLevel.chooseAction(cur_State)
                     first = False        
+                    avg_lowLvlTimes.append(r_t-last_t)
                     last_t = r_t
-                
-                if highAction == "right":
-                    print("ROBOT REACHED LR DOOR AND GOES RIGHT " + str((cur_pos[0], cur_pos[2], cur_ori)))
-                    right = True
-                    left  = False
-                elif highAction == "left":
-                    print("ROBOT REACHED LR DOOR AND GOES LEFT " + str((cur_pos[0], cur_pos[2], cur_ori)))
-                    right = False
-                    left  = True
-                front     = False
-                corridor  = False
-                
-            # Front Right door/Corridor
-            elif FR == 0.3 and R == 0.3 and B == 0.3:
-                if corridor:
-                    # Front Right Door
-                    if F == 0.3:
-                        # highAction = np.random.choice(["front", "right"])
-                        
-                        # High Level Training
-                        r_t = round(self.robot.getTime(), 2)
-                        # State reached after last highAction 
-                        next_State = self.highLevel.getState((cur_pos[0], cur_pos[2]))
-                        print("FR", next_State)
-        
-                        if next_State == '':
-                            f.write(str((cur_pos[0], cur_pos[2], cur_ori)) + " in FR DOOR\n")
-                            highAction = np.random.choice(["front", "right"])
-                        else:
-                            # Updates occur only after executing the first highLevel action (so that cur_state and next_state exist)
-                            if not first:
-                                self.highLevel.updateQTable(cur_State, next_State, highAction, r_t-last_t)
 
-                            # New QLearning cicle starts here
-                            cur_State = next_State
-                            highAction = self.highLevel.chooseAction(cur_State)
-                            first = False        
-                            last_t = r_t
-
-                        if highAction == "right":
-                            print("ROBOT REACHED FR DOOR AND GOES RIGHT " + str((cur_pos[0], cur_pos[2], cur_ori)))
-                            right = True
-                            front = False
-                        elif highAction == "front":
-                            print("ROBOT REACHED FR DOOR AND GOES FORWARD " + str((cur_pos[0], cur_pos[2], cur_ori)))
-                            front = True
-                            right = False
-                    # Corner to Right
+                    if next_State not in visited_states:
+                        visited_states[next_State] = 1
                     else:
-                        # print("ROBOT REACHED RIGHT CORNER")
+                        visited_states[next_State] += 1
+
+                    print("DOOR:", self.highLevel.statesNames[next_State], "S:", next_State, "P:", (cur_pos[0], cur_pos[2], cur_ori), "A:", highAction)
+                    if highAction == "right":
                         right = True
+                        left  = False
                         front = False
-                    corridor  = False
-
-            # Front Left door/Corridor
-            elif FL == 0.3 and L == 0.3 and B == 0.3:
-                if corridor:
-                    # Front Left Door
-                    if F == 0.3:  
-                        # highAction = np.random.choice(["front", "left"])
-                        
-                        # High Level Training
-                        r_t = round(self.robot.getTime(), 2)
-                        # State reached after last highAction 
-                        next_State = self.highLevel.getState((cur_pos[0], cur_pos[2]))
-                        print("FL", next_State)
-        
-                        if next_State == '':
-                            f.write(str((cur_pos[0], cur_pos[2], cur_ori)) + " in FL DOOR\n")
-                            highAction = np.random.choice(["front", "left"])
-                        else:
-                            # Updates occur only after executing the first highLevel action (so that cur_state and next_state exist)
-                            if not first:
-                                self.highLevel.updateQTable(cur_State, next_State, highAction, r_t-last_t)
-                            
-                            # New QLearning cicle starts here
-                            cur_State = next_State
-                            highAction = self.highLevel.chooseAction(cur_State)
-                            first = False        
-                            last_t = r_t
-
-                        if highAction == "left":
-                            print("ROBOT REACHED FL DOOR AND GOES LEFT " + str((cur_pos[0], cur_pos[2], cur_ori)))
-                            left  = True
-                            front = False
-                        elif highAction == "front":
-                            print("ROBOT REACHED FL DOOR AND GOES FORWARD " + str((cur_pos[0], cur_pos[2], cur_ori)))
-                            front = True
-                            left  = False
-                    # Left Corner
-                    else:
-                        # print("ROBOT REACHED LEFT CORNER")
+                    elif highAction == "left":
+                        right = False
                         left  = True
                         front = False
-                    corridor  = False    
+                    elif highAction == "front":
+                        right = False
+                        left  = False
+                        front = True                
+                    else:
+                        print(highAction)
+                        break
+                    corridor = False
+                    corners = False
+                
+                # Corners
+                elif F < 0.3 and B == 0.3:
+                    # Right Corner
+                    if FR == 0.3 and R == 0.3:
+                        right = True
+                        left = False
+                        front = False
+                        corridor  = False
+                        corners = True
+                    # Left Corner
+                    elif FL == 0.3 and L == 0.3:
+                        right = False
+                        left = True
+                        front = False
+                        corridor  = False
+                        corners = True
+                            
             # Corridor
-            elif FL < 0.3 and FR < 0.3 and R < FR and L < FL and B == 0.3 and F == 0.3 and (left or right or front):
-                # print("ROBOT EXITS DOOR/CORNER AND IS ON CORRIDOR")
+            elif FL < 0.3 and FR < 0.3 and R < FR and L < FL and F == 0.3 and (left or right or front):
+                if not corners:
+                    print("IN CORRIDOR " + str((cur_pos[0], cur_pos[2], cur_ori)))
                 front    = False
                 left     = False
                 right    = False
                 corridor = True
+                corners = False
 
             # Current state of the robot
             state = self.frontBrain.sensorsToState(dsValues)        
             if left and not right and not front and not corridor:
-                # print("Turn Left")
                 action = self.leftBrain.chooseAction(state) # best action in current state
 
                 # Using symmetry
@@ -282,18 +279,14 @@ class agentController():
                 # action = self.rightBrain.symmetricAction(rightAction)
                 
             elif right and not left and not front and not corridor:
-                # print("Turn Right")
                 action = self.rightBrain.chooseAction(state)
             elif (front or corridor) and not right and not left:
-                # if front:
-                    # print("Go Forward")
                 action = self.frontBrain.chooseAction(state)
             else:
                 print("ONLY ONE SHOULD BE TRUE F:", front, " R:", right, " L:", left, " C:", corridor)
                 end = True
                 break
             speeds = self.frontBrain.actionToSpeed(action)   # speed of each motor
-            # print("State: ", state, "Action: ", action)
 
             t = self.robot.getTime()
             while self.robot.getTime() - t < 0.1:
@@ -304,12 +297,32 @@ class agentController():
                 if self.robot.step(self.timestep) == -1:
                     end = True
                     break    
-            if end or nr_episodes > self.highLevel.episodes:
+            if end or nr_episodes >= self.highLevel.episodes:
                 break
 
-        print("SAVING TABLE...")
-        self.highLevel.saveQTable("QTable_HighLevel.txt")
-        print("TABLE SAVED!")
+        print("SAVING Qtable...")
+        self.highLevel.saveQTable(Qtable_name)
+        print("Qtable saved!")
+
+        print("SAVING Visited States...")
+        json.dump(visited_states, open(visitedStates_name, "w+"))
+        print("Visited States saved!")
+
+        print("SAVING Steps per episode...")
+        json.dump(paths, open(paths_name, "w+"))
+        print("Steps per episode saved!")
+
+        print("SAVING Reward Sum...")
+        f = open(rewardSum_name, "w+")
+        for r in rewardSum:
+            f.write(str(r)+"\n")
+        print("Reward Sum saved!")
+
+        print("SAVING Avg Low Level Time...")
+        f = open(avg_lowLvl_name, "w+")
+        for t in avg_lowLvlTimes:
+            f.write(str(t)+"\n")
+        print("Avg Low Level Time saved!")
         # Enter here exit cleanup code.
         exit(0)
 

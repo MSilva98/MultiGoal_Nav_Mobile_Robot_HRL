@@ -16,7 +16,7 @@ class agentController():
         self.supervisor = Supervisor()
 
         # Robot reinforcement learning brain
-        self.brain = Agent(alpha=0.5, beta=0.05, ro=0, epsilon=0.3, sensors_states=6, Qtable="QTable_v5_19500h.txt", RWDTable="RwdTable_v6_walls_2.txt")
+        self.brain = Agent(alpha=0.3, beta=0.05, ro=0, epsilon=0.4, sensors_states=6, RWDTable="RwdTable_v6.txt")
 
         # node to use supervisor functions
         self.robot_node = self.supervisor.getFromDef("epuck")
@@ -63,10 +63,11 @@ class agentController():
         cur_state = 0
         next_state = 0
         last_t = 0
+        newRandom = False
 
         x_space = [x/100 for x in range(-11, 12, 3) if abs(x) > 1]
-        # z_space = [z/100 for z in range(125, 147, 5)] # giant corridor 3m
-        z_space = [z/100 for z in range(35, 56, 5)]   # corridor 1.25m
+        z_space = [z/100 for z in range(125, 147, 5)] # giant corridor 3m
+        # z_space = [z/100 for z in range(30, 56, 5)]   # corridor 1.25m
         ori_space = [o*math.pi/180 for o in range(0, 360, 15)]
         start_pos = []
 
@@ -76,11 +77,11 @@ class agentController():
             if cur_ori >= 180:
                 cur_ori -= 180
 
+            newRandom = False
             t = self.supervisor.getTime()
-            # New random position when centered and 1 min passed, between 1500th hour and 2000th hour
             r_t = round(t,0)
-            if cur_pos <= 0.01 and cur_ori <= 10 and r_t >= 5400000 and r_t <= 7200000:
-            # if cur_pos <= 0.01 and cur_ori <= 10 and r_t-last_t > 60:
+            # New random position when centered and 5 min passed
+            if r_t-last_t >= 300:
                 last_t = r_t
                 print("NEW RANDOM POSITION ", last_t)
                 x = np.random.choice(x_space)
@@ -91,6 +92,7 @@ class agentController():
                 self.translation_field.setSFVec3f([x,0,z])
                 self.rotation_field.setSFRotation([0,1,0,ori])
                 self.robot_node.resetPhysics()
+                newRandom = True
         
             t = self.supervisor.getTime()
             while self.supervisor.getTime() - t < 0.05:
@@ -106,7 +108,7 @@ class agentController():
 
             next_state = self.brain.sensorsToState(dsValues, False) # next state - state after action
             
-            if not first:   # first step won't update table before take action
+            if not first and not newRandom:   # first step won't update table before take action
                 # This happens after Take Action
                 self.brain.updateQTable(cur_state, next_state, action)
                     
@@ -127,14 +129,24 @@ class agentController():
 
                 first = False
                 
-            # Controller exit or t = 2000h 
-            if end or round(t,0) == 7200000:
+            if round(t,0) == 7200000:
+                print("SAVING TABLE...")
+                self.brain.saveQTable("QTable_v6_2000h.txt")
+                print("TABLE SAVED!")
+                        
+            if round(t,0) == 14400000:
+                print("SAVING TABLE...")
+                self.brain.saveQTable("QTable_v6_4000h.txt")
+                print("TABLE SAVED!")
+            
+            # Controller exit or t = 6000h 
+            if end or round(t,0) == 21600000:
                 break
         
         print("Positions:", len(start_pos))
         # Enter here exit cleanup code.
         print("SAVING TABLE...")
-        self.brain.saveQTable("QTable_v5_19500h.txt")
+        self.brain.saveQTable("QTable_v6_6000h.txt")
         print("TABLE SAVED!")
         exit(0)
 

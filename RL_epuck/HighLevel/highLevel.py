@@ -12,14 +12,18 @@ class Agent():
         self.epsilon = epsilon
 
         # States -> Will be each door entrance - DEPEND ON EACH MAZE
-        # Each maze has a statesFile with dictionary of type -> {"(x, z)": "doorType",}
+        # Each maze has a statesFile with dictionary of type -> {"(x, z, ori)": "doorType",}
         # Last position in dictionary defines goal -> "(x, z)": "goal"
-        # NOTE: The space between x and z in (x, z) is MANDATORY
+        # NOTE: The space between x, z and ori in (x, z, ori) is MANDATORY as well as in (x, z)
         if statesFile == None:
             print("MUST DEFINE STATES BEFORE")
+            exit()
         else:
             with open(statesFile, "r") as jsonFile:
                 self.statesF = json.load(jsonFile)
+
+            with open(statesFile[:-4] + "_names.txt", "r") as jsonFile:
+                self.statesNames = json.load(jsonFile)
 
         # Actions the agent can perform
         # Depend on type of door
@@ -32,8 +36,6 @@ class Agent():
         if Qtable == None:
             self.QTable = {}
             for state in self.statesF:
-                # x,z = [round(float(v),2) for v in state.replace('(','').replace(')','').replace(' ','').split(',')]
-                # self.states.append((x,z))
                 self.QTable[state] = {}
                 if self.statesF[state] == "fr":
                     actions = ["front", "right"]
@@ -67,17 +69,31 @@ class Agent():
             action = np.random.choice(listofmaxActions)
         return action
 
-    def getState(self, state):
+    def getState(self, state, checkingGoal=False):
         if str(state) in self.QTable.keys():
             return str(state)
 
-        # x,z = [round(float(v),2) for v in state.replace('(','').replace(')','').replace(' ','').split(',')]
-        x,z = state
+        x,z,ori = state
         # Create all possible combinations within margin
         all_states = []
-        for i in range(-7,8):
-            for j in range(-3,4):
-                all_states.append(str((round(x+i/100,2),round(z+j/100,2))))
+
+        cur_ori = abs(ori)*180/math.pi
+        # When checking the goal position consider square area of 6x6
+        if checkingGoal:
+            for i in range(-6,7):
+                for j in range(-6,7):
+                    all_states.append(str((round(x+i/100,2),round(z+j/100,2))))
+        else:
+            # Cases where robot is facing up or down -> x represents corridor width
+            if cur_ori < 20 or cur_ori > 160: 
+                for i in range(-8,9):
+                    for l in range(-20, 21):
+                        all_states.append(str((round(x+i/100,2), round(z,2), round(abs(ori+(l*math.pi/180)),1))))
+            # Cases where robot is facing sides -> z represents corridor width
+            elif cur_ori > 70 and cur_ori < 110:
+                for j in range(-8,9):
+                    for l in range(-20, 21):
+                        all_states.append(str((round(x,2), round(z+j/100,2), round(ori+(l*math.pi/180),1))))
 
         for s in all_states:
             if s in self.QTable.keys():
@@ -94,7 +110,7 @@ class Agent():
         return highest_q
 
     def reachedGoal(self, state):
-        tableState = self.getState(state)
+        tableState = self.getState(state, checkingGoal=True)
         if tableState == '':
             return False
         if tableState == self.goal:
@@ -110,7 +126,7 @@ class Agent():
         if state == self.goal:
             return 100
         else:
-            return round(-10*(timePassed/3600),4)
+            return round(-500*(timePassed/3600),4)
         
     def updateQTable(self, cur_state, next_state, action, timePassed):
         rwd = self.reward(next_state, timePassed)

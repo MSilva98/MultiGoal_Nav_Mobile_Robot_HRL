@@ -1,0 +1,1 @@
+{"lr10": ["left"], "lr5": ["left", "right"]}

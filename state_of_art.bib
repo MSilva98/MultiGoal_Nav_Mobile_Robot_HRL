@@ -1,0 +1,147 @@
+@misc{Surmann2020,
+abstract = {Deep Reinforcement Learning has been successfully applied in various computer games [8]. However, it is still rarely used in real-world applications, especially for the navigation and continuous control of real mobile robots [13]. Previous approaches lack safety and robustness and/or need a structured environment. In this paper we present our proof of concept for autonomous self-learning robot navigation in an unknown environment for a real robot without a map or planner. The input for the robot is only the fused data from a 2D laser scanner and a RGB-D camera as well as the orientation to the goal. The map of the environment is unknown. The output actions of an Asynchronous Advantage Actor-Critic network (GA3C) are the linear and angular velocities for the robot. The navigator/controller network is pretrained in a high-speed, parallel, and self-implemented simulation environment to speed up the learning process and then deployed to the real robot. To avoid overfitting, we train relatively small networks, and we add random Gaussian noise to the input laser data. The sensor data fusion with the RGB-D camera allows the robot to navigate in real environments with real 3D obstacle avoidance and without the need to fit the environment to the sensory capabilities of the robot. To further increase the robustness, we train on environments of varying difficulties and run 32 training instances simultaneously. 1},
+author = {Surmann, Hartmut and Jestel, Christian and Marchel, Robin and Musberg, Franziska and Elhadj, Houssem and Ardani, Mahbube},
+booktitle = {arXiv},
+issn = {23318422},
+title = {{Deep reinforcement learning for real autonomous mobile robot navigation in indoor environments}},
+year = {2020}
+}
+@inproceedings{Bischoff2013,
+abstract = {For complex tasks, such as manipulation and robot navigation, reinforcement learning (RL) is well-known to be difficult due to the curse of dimensionality. To overcome this complexity and making RL feasible, hierarchical RL (HRL) has been suggested. The basic idea of HRL is to divide the original task into elementary subtasks, which can be learned using RL. In this paper, we propose a HRL architecture for learning robot's movements, e.g. robot navigation. The proposed HRL consists of two layers: (i) movement planning and (ii) movement execution. In the planning layer, e.g. generating navigation trajectories, discrete RL is employed while using movement primitives. Given the movement planning and corresponding primitives, the policy for the movement execution can be learned in the second layer using continuous RL. The proposed approach is implemented and evaluated on a mobile robot platform for a navigation task.},
+author = {Bischoff, B. and Nguyen-Tuong, D. and Lee, I. H. and Streichert, F. and Knoll, A.},
+booktitle = {ESANN 2013 proceedings, 21st European Symposium on Artificial Neural Networks, Computational Intelligence and Machine Learning},
+title = {{Hierarchical reinforcement learning for robot navigation}},
+year = {2013}
+}
+@misc{Li2019,
+abstract = {Most common navigation tasks in human environments require auxiliary arm interactions, e.g. opening doors, pressing buttons and pushing obstacles away. This type of navigation tasks, which we call Interactive Navigation, requires the use of mobile manipulators: mobile bases with manipulation capabilities. Interactive Navigation tasks are usually long-horizon and composed of heterogeneous phases of pure navigation, pure manipulation, and their combination. Using the wrong part of the embodiment is inefficient and hinders progress. We propose HRL4IN, a novel Hierarchical RL architecture for Interactive Navigation tasks. HRL4IN exploits the exploration benefits of HRL over flat RL for long-horizon tasks thanks to temporally extended commitments towards subgoals. Different from other HRL solutions, HRL4IN handles the heterogeneous nature of the Interactive Navigation task by creating subgoals in different spaces in different phases of the task. Moreover, HRL4IN selects different parts of the embodiment to use for each phase, improving energy efficiency. We evaluate HRL4IN against flat PPO and HAC, a state-of-the-art HRL algorithm, on Interactive Navigation in two environments - a 2D grid-world environment and a 3D environment with physics simulation. We show that HRL4IN significantly outperforms its baselines in terms of task performance and energy efficiency. More information is available at https://sites.google.com/view/hrl4in.},
+author = {Li, Chengshu and Xia, Fei and Mart{\'{i}}n-Mart{\'{i}}n, Roberto and Savarese, Silvio},
+booktitle = {arXiv},
+issn = {23318422},
+title = {{HRL4IN: Hierarchical reinforcement learning for interactive navigation with mobile manipulators}},
+year = {2019}
+}
+@article{Yu2020,
+abstract = {Existing mobile robots cannot complete some functions. To solve these problems, which include autonomous learning in path planning, the slow convergence of path planning, and planned paths that are not smooth, it is possible to utilize neural networks to enable to the robot to perceive the environment and perform feature extraction, which enables them to have a fitness of environment to state action function. By mapping the current state of these actions through Hierarchical Reinforcement Learning (HRL), the needs of mobile robots are met. It is possible to construct a path planning model for mobile robots based on neural networks and HRL. In this article, the proposed algorithm is compared with different algorithms in path planning. It underwent a performance evaluation to obtain an optimal learning algorithm system. The optimal algorithm system was tested in different environments and scenarios to obtain optimal learning conditions, thereby verifying the effectiveness of the proposed algorithm. Deep Deterministic Policy Gradient (DDPG), a path planning algorithm for mobile robots based on neural networks and hierarchical reinforcement learning, performed better in all aspects than other algorithms. Specifically, when compared with Double Deep Q-Learning (DDQN), DDPG has a shorter path planning time and a reduced number of path steps. When introducing an influence value, this algorithm shortens the convergence time by 91% compared with the Q-learning algorithm and improves the smoothness of the planned path by 79%. The algorithm has a good generalization effect in different scenarios. These results have significance for research on guiding, the precise positioning, and path planning of mobile robots.},
+author = {Yu, Jinglun and Su, Yuancheng and Liao, Yifan},
+doi = {10.3389/fnbot.2020.00063},
+issn = {16625218},
+journal = {Frontiers in Neurorobotics},
+title = {{The Path Planning of Mobile Robot by Neural Networks and Hierarchical Reinforcement Learning}},
+volume = {14},
+year = {2020}
+}
+@article{Kober2013,
+abstract = {Reinforcement learning offers to robotics a framework and set of tools for the design of sophisticated and hard-to-engineer behaviors. Conversely, the challenges of robotic problems provide both inspiration, impact, and validation for developments in reinforcement learning. The relationship between disciplines has sufficient promise to be likened to that between physics and mathematics. In this article, we attempt to strengthen the links between the two research communities by providing a survey of work in reinforcement learning for behavior generation in robots. We highlight both key challenges in robot reinforcement learning as well as notable successes. We discuss how contributions tamed the complexity of the domain and study the role of algorithms, representations, and prior knowledge in achieving these successes. As a result, a particular focus of our paper lies on the choice between model-based and model-free as well as between value-function-based and policy-search methods. By analyzing a simple problem in some detail we demonstrate how reinforcement learning approaches may be profitably applied, and we note throughout open questions and the tremendous potential for future research. {\textcopyright} The Author(s) 2013.},
+author = {Kober, Jens and Bagnell, J. Andrew and Peters, Jan},
+doi = {10.1177/0278364913495721},
+issn = {02783649},
+journal = {International Journal of Robotics Research},
+number = {11},
+title = {{Reinforcement learning in robotics: A survey}},
+volume = {32},
+year = {2013}
+}
+@inproceedings{Parr1998,
+abstract = {We present a new approach to reinforcement learning in which the policies considered by the learning process are constrained by hierarchies of partially specified machines. This allows for the use of prior knowledge to reduce the search space and provides a framework in which knowledge can be transferred across problems and in which component solutions can be recombined to solve larger and more complicated problems. Our approach can be seen as providing a link between reinforcement learning and "behavior-based" or "teleo-reactive" approaches to control. We present provably convergent algorithms for problem-solving and learning with hierarchical machines and demonstrate their effectiveness on a problem with several thousand states.},
+author = {Parr, Ronald and Russell, Stuart},
+booktitle = {Advances in Neural Information Processing Systems},
+issn = {10495258},
+title = {{Reinforcement learning with hierarchies of machines}},
+year = {1998}
+}
+@article{Dietterich2000,
+abstract = {This paper presents a new approach to hierarchical reinforcement learning based on decomposing the target Markov decision process (MDP) into a hierarchy of smaller MDPs and decomposing the value function of the target MDP into an additive combination of the value functions of the smaller MDPs. The decomposition, known as the MAXQ decomposition, has both a procedural semantics - as a subroutine hierarchy - and a declarative semantics - as a representation of the value function of a hierarchical policy. MAXQ unifies and extends previous work on hierarchical reinforcement learning by Singh, Kaelbling, and Dayan and Hinton. It is based on the assumption that the programmer can identify useful subgoals and define subtasks that achieve these subgoals. By defining such subgoals, the programmer constrains the set of policies that need to be considered during reinforcement learning. The MAXQ value function decomposition can represent the value function of any policy that is consistent with the given hierarchy. The decomposition also creates opportunities to exploit state abstractions, so that individual MDPs within the hierarchy can ignore large parts of the state space. This is important for the practical application of the method. This paper defines the MAXQ hierarchy, proves formal results on its representational power, and establishes five conditions for the safe use of state abstractions. The paper presents an online model-free learning algorithm, MAXQ-Q, and proves that it converges with probability 1 to a kind of locally-optimal policy known as a recursively optimal policy, even in the presence of the five kinds of state abstraction. The paper evaluates the MAXQ representation and MAXQ-Q through a series of experiments in three domains and shows experimentally that MAXQ-Q (with state abstractions) converges to a recursively optimal policy much faster than flat Q learning. The fact that MAXQ learns a representation of the value function has an important benefit: it makes it possible to compute and execute an improved, non-hierarchical policy via a procedure similar to the policy improvement step of policy iteration. The paper demonstrates the effectiveness of this non-hierarchical execution experimentally. Finally, the paper concludes with a comparison to related work and a discussion of the design tradeoffs in hierarchical reinforcement learning.},
+author = {Dietterich, Thomas G.},
+doi = {10.1613/jair.639},
+issn = {10769757},
+journal = {Journal of Artificial Intelligence Research},
+title = {{Hierarchical Reinforcement Learning with the MAXQ Value Function Decomposition}},
+volume = {13},
+year = {2000}
+}
+@inproceedings{Ruan2019,
+abstract = {Learning to navigate in an unknown environment is a crucial capability of mobile robot. Conventional method for robot navigation consists of three steps, involving localization, map building and path planning. However, most of the conventional navigation methods rely on obstacle map, and dont have the ability of autonomous learning. In contrast to the traditional approach, we propose an end-to-end approach in this paper using deep reinforcement learning for the navigation of mobile robots in an unknown environment. Based on dueling network architectures for deep reinforcement learning (Dueling DQN) and deep reinforcement learning with double q learning (Double DQN), a dueling architecture based double deep q network (D3QN) is adapted in this paper. Through D3QN algorithm, mobile robot can learn the environment knowledge gradually through its wonder and learn to navigate to the target destination autonomous with an RGB-D camera only. The experiment results show that mobile robot can reach to the desired targets without colliding with any obstacles.},
+author = {Ruan, Xiaogang and Ren, Dingqi and Zhu, Xiaoqing and Huang, Jing},
+booktitle = {Proceedings of the 31st Chinese Control and Decision Conference, CCDC 2019},
+doi = {10.1109/CCDC.2019.8832393},
+title = {{Mobile Robot Navigation based on Deep Reinforcement Learning}},
+year = {2019}
+}
+@inproceedings{Han2018,
+abstract = {Navigation tasks for mobile robots have been widely studied over past several years. More recently, there have been many attempts to introduce the usage of machine learning algorithms. Deep learning techniques are of special importance because they have achieved excellent performance in various fields, including robot navigation. Deep learning methods, however, require considerable amount of data for training deep learning models and their results may be difficult to interpret for researchers. To address this issue, we propose a novel model for mobile robot navigation using deep reinforcement learning. In our navigation tasks, no information about the environment is given to the robot beforehand. Additionally, the positions of obstacles and goal change in every episode. In order to succeed under these conditions, we combine several Q-learning techniques that are considered to be state-of-the-art. We first provide a description of our model and then verify it through a series of experiments.},
+author = {Han, Seung Ho and Choi, Ho Jin and Benz, Philipp and Loaiciga, Jorge},
+booktitle = {Proceedings - 2018 IEEE International Conference on Big Data and Smart Computing, BigComp 2018},
+doi = {10.1109/BigComp.2018.00030},
+title = {{Sensor-Based Mobile Robot Navigation via Deep Reinforcement Learning}},
+year = {2018}
+}
+@inproceedings{Song2012,
+abstract = {This paper develops a decision-making system based on the BP Neural Network to navigate a robot in an unknown environment. Based on the neural network model, the robot can move out of specific mazes successfully through adjusting its direction and speed continuously. A BP neural network, which includes three input nodes and nine output nodes, are designed for the navigation system. The information of the surrounding environment is returned by six ultrasonic sensors on the front and bilateral sides of the robot. After thousands of training, the robot learns the navigation knowledge successfully from the samples, and move out of the mazes autonomously. The performance of the robot is validated with the simulation results and two physical experiments. The results show that the robot could navigate autonomously in unknown environments. {\textcopyright} 2012 IEEE.},
+author = {Song, Xiyang and Fang, Huangwei and Jiao, Xiong and Wang, Ying},
+booktitle = {ICIAFS 2012 - Proceedings: 2012 IEEE 6th International Conference on Information and Automation for Sustainability},
+doi = {10.1109/ICIAFS.2012.6419894},
+title = {{Autonomous mobile robot navigation using machine learning}},
+year = {2012}
+}
+@inproceedings{Buitrago-Martinez2013,
+abstract = {The motion planning task for a mobile robot aims to generate a free-collision path from an initial point to a target point. This task may be highly complex because it requires a complete knowledge of the robot's environment. In this paper an option-based hierarchical learning approach is proposed to this problem in which basic behaviors are applied in order to accomplish the robot motion planning task. Each behavior is independently learned by the robot in the learning phase. Afterward, the robot learns to coordinate these basic behaviors to resolve the motion planning task. The application of the learning approach is validated with robot motion planning tasks in simulation as well as in an experimental environment. The results show a solution to the motion planning problem that can be highly successful in new unknown environments. {\textcopyright} 2013 IEEE.},
+author = {Buitrago-Mart{\'{i}}nez, Andrea and {De La Rosa R.}, Fernando and Lozano-Mart{\'{i}}nez, Fernando},
+booktitle = {Proceedings - 2013 IEEE Latin American Robotics Symposium, LARS 2013},
+doi = {10.1109/LARS.2013.62},
+title = {{Hierarchical reinforcement learning approach for motion planning in mobile robotics}},
+year = {2013}
+}
+@inproceedings{Shen2006,
+abstract = {MAXQ is a new framework for multi-agent reinforcement learning. But the MAXQ framework cannot decompose all subtasks into more refined hierarchies and the hierarchies are difficult to be discovered automatically. In this paper, a multi-agent hierarchical reinforcement learning approach, named OptMAXQ, by integrating Options into MAXQ is presented. In the OptMAXQ framework, the MAXQ framework is used to introduce knowledge into reinforcement learning and the Option framework is used to construct hierarchies automatically. The performance of OptMAXQ is demonstrated in two-robot trash collection task and compared with MAXQ. The simulation results show that the OptMAXQ is more practical than MAXQ in partial known environment. {\textcopyright} 2006 IEEE.},
+author = {Shen, Jing and Gu, Ochang and Liu, Haibo},
+booktitle = {First International Multi- Symposiums on Computer and Computational Sciences, IMSCCS'06},
+doi = {10.1109/IMSCCS.2006.90},
+title = {{Multi-agent hierarchical reinforcement learning by integrating options into MAXQ}},
+volume = {1},
+year = {2006}
+}
+@inproceedings{MadhuBabu2016,
+abstract = {The main objective of this paper is to develop an autonomous robot that show the use of Q-learning for navigation in a complete unknown environment. This will calculate the shortest path from current state to goal state by analyzing the environment through captured images. Further the captured images will be processed through image processing and machine learning techniques. The proposed method also takes care of the obstacles present in that environment. Initially, the unknown environment will be captured using a camera. Obstacle detection method will be applied on it. Then the grid based map obtained from vision based obstacle detection method will be given to Q-Learning algorithm which will be further made live with motion planning.},
+author = {{Madhu Babu}, V. and {Vamshi Krishna}, U. and Shahensha, S. K.},
+booktitle = {Proceedings of the 10th International Conference on Intelligent Systems and Control, ISCO 2016},
+doi = {10.1109/ISCO.2016.7727034},
+title = {{An autonomous path finding robot using Q-learning}},
+year = {2016}
+}
+@inproceedings{Martinez-Marin2007,
+abstract = {In this paper we propose a generic approach for navigation of nonholonomic vehicles in unknown environments. The vehicle model is also unknown, so the path planner uses reinforcement learning to acquire the optimal behaviour together with the model, which is estimated by a reduced set of transitions. After the training phase, the vehicle is able to explore the environment through a wall-following behaviour. In order to guide the navigation and to build a map of the environment the planner employs virtual walls. The learning time to acquire a good approximation of the wall-following behaviour was only a few minutes. Both simulation and experimental results are reported to show the satisfactory performance of the method. {\textcopyright}2007 IEEE.},
+author = {Mart{\'{i}}nez-Mar{\'{i}}n, Toḿas and Rodr{\'{i}}guez, Rafael},
+booktitle = {IEEE Intelligent Vehicles Symposium, Proceedings},
+doi = {10.1109/ivs.2007.4290226},
+title = {{Navigation of autonomous vehicles in unknown environments using reinforcement learning}},
+year = {2007}
+}
+@inproceedings{Romero-Marti2017,
+abstract = {Service robots are expected to help us in different tasks in various environments such as homes, hospitals and offices. This work presents the first steps towards building a service robot at our university. The robot is provided with a topological map of a building floor (environmental map). Using this map the robot learns a path from one location to another by means of reinfocerment learning. During execution the robot is provided with a navigation map, related to the environmental map. We make use of a comercial Roomba robot and show how to create an interface in order to control it. Service robots are expected to help us in different tasks in various environments such as homes, hospitals and offices. This work presents the first steps towards building a service robot at our university. The robot is provided with a topological map of a building floor (environmental map). Using this map the robot learns a path from one location to another by means of reinfocerment learning. During execution the robot is provided with a navigation map, related to the environmental map. We make use of a comercial Roomba robot and show how to create an interface in order to control it.},
+author = {Romero-Marti, Daniel Paul and Nunez-Varela, Jose Ignacio and Soubervielle-Montalvo, Carlos and Orozco-De-La-Paz, Alfredo},
+booktitle = {18th Congreso Mexicano de Robotica, COMRob 2016},
+doi = {10.1109/COMROB.2016.7955160},
+title = {{Navigation and path planning using reinforcement learning for a Roomba robot}},
+year = {2017}
+}
+@inproceedings{Zuo2014,
+abstract = {It is a challenging task for an autonomous robot to navigate in an unknown environment. Machine learning could be useful to support the robot to adapt to the environment and learn the correct navigation skills quickly. In this paper, a reinforcement learning (Q-learning) based approach is proposed to help a robot to move out of an unknown maze. The definitions of the world states, actions and rewards of the algorithm are presented and some experiments are completed to validate the approach. The experimental results show that the proposed approach does have a good performance on mobile robot navigation.},
+author = {Zuo, Bashan and Chen, Jiaxin and Wang, Larry and Wang, Ying},
+booktitle = {Conference Proceedings - IEEE International Conference on Systems, Man and Cybernetics},
+doi = {10.1109/smc.2014.6974463},
+issn = {1062922X},
+number = {January},
+title = {{A reinforcement learning based robotic navigation system}},
+volume = {2014-January},
+year = {2014}
+}
+@incollection{Turing2012,
+abstract = {The new form of the problem can be described in terms of a game which we call the ' imitation game '. It is played with three people, a man (A), a woman (B), and an interrogator (C) who may be of either sex. The interrogator stays in a room apart from the other two. The object of the game for the interrogator is to determine which of the other two is the man and which is the woman. He knows them by labels X and Y, and at the end of the game he says either ' X is A and Y is B ' or ' X is B and Y is A '. The interrogator is allowed to put questions to A and B thus: C: Will X please tell me the length of his or her hair? Now suppose X is actually A, then A must answer. It is A's I.COMPUTING MACHINERY AND INTELLIGENCE object in the game to try and cause C to make the wrong identification. His answer might therefore be ' My hair is shingled, and the longest strands are about nine inches long.'},
+author = {Turing, A. M.},
+booktitle = {Machine Intelligence: Perspectives on the Computational Model},
+doi = {10.1525/9780520318267-013},
+issn = {0026-4423},
+title = {{Computing machinery and intelligence}},
+year = {2012}
+}
