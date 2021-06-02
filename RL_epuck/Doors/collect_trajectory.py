@@ -35,9 +35,9 @@ class agentController():
         # self.leftBrain  = Agent(epsilon=0, Qtable="./v52/QTable_v5_17500h_LR_Left.txt")   # QTable to go left on FL doors
         # self.rightBrain = Agent(epsilon=0, Qtable="./v52/QTable_v5_17500h_LR_Right.txt")  # QTable to go right on FR doors
         
-        self.frontBrain = Agent(epsilon=0, Qtable="QTable_corridor_2.txt")        # QTable for corridor and to go forward                
-        self.leftBrain  = Agent(epsilon=0, Qtable="QTable_22000h_FR_Left.txt")      # QTable to go left on FL and LR Doors
-        self.rightBrain = Agent(epsilon=0, Qtable="QTable_22000h_FR_Right.txt")     # QTable to go right on FR and LR Doors
+        self.frontBrain = Agent(epsilon=0, Qtable="QTable_corridor.txt")        # QTable for corridor and to go forward                
+        self.leftBrain  = Agent(epsilon=0, Qtable="QTable_LR_Right.txt")      # QTable to go left on FL and LR Doors
+        self.rightBrain = Agent(epsilon=0, Qtable="QTable_LR_Right.txt")     # QTable to go right on FR and LR Doors
 
         # get the time step of the current world.
         self.timestep = 32
@@ -86,7 +86,7 @@ class agentController():
         # Turn right no door
         rightDoor = True
         # LR door (used to set wall to position)
-        lrDoor = False
+        lrDoor = True
 
         if not all_together:
             if lrDoor:
@@ -261,7 +261,7 @@ class agentController():
                     action = self.leftBrain.chooseAction(state)
             else:
                 action = self.frontBrain.chooseAction(state)
-                # action = "F"
+                action = "F"
 
             speeds = self.frontBrain.actionToSpeed(action)   # speed of each motor
             print("State: ", state, "Action: ", action)

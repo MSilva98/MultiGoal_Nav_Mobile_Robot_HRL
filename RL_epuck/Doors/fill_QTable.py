@@ -63,21 +63,21 @@ class fill_QTable():
         x_vals_lr = [x/100 for x in range(-11, 12)]  # Corridor middle to right side (LR Door is symmetrical in X = 0)
     
         z_vals_r = [z/100 for z in range(0, 12)]    # Corridor center of FR Door to bottom (FR Door is symmetrical in Z = 0)
-        z_vals_lr = [z/100 for z in range(-11, 25)]  # Inside LR Door
+        z_vals_lr = [z/100 for z in range(-11, 15)]  # Inside LR Door
         z_vals_fwd_lr = [z/100 for z in range(11, 35)]
         z_vals_fwd = [z/100 for z in range(-25, 26)] # Door entrance up to door exit
         z_vals_fwd += [z/100 for z in range(74, 95)] # Dead End
         
-        rot_vals_r = [rot*math.pi/180 for rot in range(-180, 0)]    # Used in FR Door -> 90 to 180 degrees ignored in FR Door action to right (assumed positions won't happen)
-        rot_vals_fwd = [rot*math.pi/180 for rot in range(-180, 180)] # 0 to 360 degrees used in FR Door action to front (angle conversion makes this table suitable for FL Door aswell (270 to 90 is FR Door, 90 to 270 is FL Door))
-        rot_vals_lr = [rot*math.pi/180 for rot in range(-180, 0)]   # Used in LR Door
+        rot_vals_r = [rot*math.pi/180 for rot in range(-180, 0)]      # Used in FR Door -> 90 to 180 degrees ignored in FR Door action to right (assumed positions won't happen)
+        rot_vals_fwd = [rot*math.pi/180 for rot in range(-180, 180)]  # 0 to 360 degrees used in FR Door action to front (angle conversion makes this table suitable for FL Door aswell (270 to 90 is FR Door, 90 to 270 is FL Door))
+        rot_vals_lr = [rot*math.pi/180 for rot in range(-180, 90)]     # Used in LR Door
         rot_vals_fwd_lr = [rot*math.pi/180 for rot in range(-90, 90)] # 0 to 360 degrees used in FR Door action to front (angle conversion makes this table suitable for FL Door aswell (270 to 90 is FR Door, 90 to 270 is FL Door))
 
         # Load corridor QTable
-        f = open("QTable_v5_22000h.txt", "r")
+        f = open("QTable_v6_4000h.txt", "r")
         corridorQTable = json.load(f)
 
-        doorTypes = ["FR"]
+        doorTypes = ["LR"]
         for door in doorTypes:
             if door == "FR":
                 # Set wall on the left side
@@ -169,6 +169,8 @@ class fill_QTable():
                                 x_transformed = x
                                 if x_transformed > 0.11:
                                     x_transformed = 0.11
+                                if z_transformed > 0.11:
+                                    z_transformed = 0.11
 
                                 if cur_ori > 180:
                                     cur_ori -= 360
@@ -179,7 +181,7 @@ class fill_QTable():
                                 if cur_ori == -0.0:
                                     cur_ori = 0.0
 
-                                if z > 0.11:
+                                if z > 0.15:
                                     cur_ori = round((rot*180/math.pi),0)+30
                                     if cur_ori > 180:
                                         cur_ori -= 360
@@ -190,7 +192,7 @@ class fill_QTable():
                                     if cur_ori == -0.0:
                                         cur_ori = 0.0
                                     if cur_ori < 90 and cur_ori > -90:        
-                                        p = (x, 0.0, cur_ori)
+                                        p = (x, 0.15, cur_ori)
                                     else:
                                         p = (x, -0.07, cur_ori)
                                 else:
@@ -218,7 +220,7 @@ class fill_QTable():
                             f2.write("POS: " + str(p) + ", POS_B4: " + str((x, z, rot)) + "\nS: " + state + " CS: " + corridorState + " A: " + action + " RWD: " + str(rwd) + "\n")
                 f2.close()          
                 print("SAVING TABLE "+door+" "+act+"... ",)
-                self.brain.saveQTable("QTable_22000h_"+door+"_"+act+".txt")
+                self.brain.saveQTable("QTable_"+door+"_"+act+".txt")
                 # json.dump(table, open("QTable_22000h_"+door+"_"+act+".txt", "w+"))
                 print("TABLE SAVED!")
 
