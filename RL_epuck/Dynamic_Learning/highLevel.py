@@ -145,6 +145,7 @@ class Agent():
             return 100
         else:
             return round(-500*(timePassed/3600),4)
+
         
     def updateQTable(self, cur_state, next_state, action, timePassed):
         rwd = self.reward(next_state, timePassed)

@@ -87,7 +87,7 @@ class agentController():
         else:
             # MAZE 2
             # High Level brain
-            self.highLvl = highLvlAgent(epsilon=0, statesFile="./mazes/maze2.txt", Qtable="QTable_HighLevel_maze2_updated.txt", memoryDoors="maze2_memory.txt")
+            self.highLvl = highLvlAgent(epsilon=0, statesFile="./mazes/maze2.txt", Qtable="QTable_HighLevel_maze2.txt")
             init_pos1 = [0.8,0,1.15]
             init_ori1 = [0,1,0,1.57]
             init_pos2 = [-1.15,0,0.6]
@@ -100,9 +100,9 @@ class agentController():
             memory_name = "maze2_memory_2.txt"
 
         # Set robot intial position
-        init_pos = 10
-        self.translation_field.setSFVec3f(init_pos2)
-        self.rotation_field.setSFRotation(init_ori2)
+        init_pos = 0
+        self.translation_field.setSFVec3f(init_pos3)
+        self.rotation_field.setSFRotation(init_ori3)
         self.robot_node.resetPhysics()
 
         while self.robot.step(self.timestep) != -1:    
@@ -112,22 +112,27 @@ class agentController():
             # Each timestep check if robot reached goal
             if self.highLvl.reachedGoal(cur_pos):
                 init_pos += 1
-                # RESET ROBOT POSITIONS
-                if init_pos < 10:
-                    self.translation_field.setSFVec3f(init_pos1)
-                    self.rotation_field.setSFRotation(init_ori1)
-                elif init_pos >= 10 and init_pos < 20:
-                    self.translation_field.setSFVec3f(init_pos2)
-                    self.rotation_field.setSFRotation(init_ori2)
-                elif init_pos >= 20 and init_pos < 30: 
-                    self.translation_field.setSFVec3f(init_pos3)
-                    self.rotation_field.setSFRotation(init_ori3)
-                elif init_pos >= 30 and init_pos < 40:
-                    self.translation_field.setSFVec3f(init_pos4)
-                    self.rotation_field.setSFRotation(init_ori4)
-                else:
-                    end = True
-                    break
+
+
+                self.translation_field.setSFVec3f(init_pos3)
+                self.rotation_field.setSFRotation(init_ori3)
+
+                # # RESET ROBOT POSITIONS
+                # if init_pos < 10:
+                #     self.translation_field.setSFVec3f(init_pos1)
+                #     self.rotation_field.setSFRotation(init_ori1)
+                # elif init_pos >= 10 and init_pos < 20:
+                #     self.translation_field.setSFVec3f(init_pos2)
+                #     self.rotation_field.setSFRotation(init_ori2)
+                # elif init_pos >= 20 and init_pos < 30: 
+                #     self.translation_field.setSFVec3f(init_pos3)
+                #     self.rotation_field.setSFRotation(init_ori3)
+                # elif init_pos >= 30 and init_pos < 40:
+                #     self.translation_field.setSFVec3f(init_pos4)
+                #     self.rotation_field.setSFRotation(init_ori4)
+                # else:
+                #     end = True
+                #     break
                 self.robot_node.resetPhysics()
                 print("Start Pos ", init_pos)
 
@@ -147,7 +152,7 @@ class agentController():
                     break
             
             # Get high level action for current position if any
-            highState, highAction = self.getHighLvlAction(cur_pos)
+            highState, highAction = self.getHighLvlAction(cur_pos, 0.5)
     
             if highState != None:
                 r_t = round(self.robot.getTime(), 2)
@@ -204,13 +209,13 @@ class agentController():
             if end:
                 break
 
-        print("SAVING Qtable...")
-        self.highLvl.saveQTable(Qtable_name)
-        print("Qtable saved!")
+        # print("SAVING Qtable...")
+        # self.highLvl.saveQTable(Qtable_name)
+        # print("Qtable saved!")
 
-        print("Saving robot memory from doors...")
-        self.highLvl.saveMemory(memory_name)
-        print("Memory saved!")
+        # print("Saving robot memory from doors...")
+        # self.highLvl.saveMemory(memory_name)
+        # print("Memory saved!")
 
         # Enter here exit cleanup code.
         exit(0)
@@ -231,7 +236,7 @@ class agentController():
         return (cur_pos[0], cur_pos[2], cur_ori)
 
     # Get High Level Action for current robot position if reached door
-    def getHighLvlAction(self, cur_pos):
+    def getHighLvlAction(self, cur_pos, epsilon):
         if self.corridor:
             # High Level State
             state = self.highLvl.getState(cur_pos)
@@ -240,7 +245,7 @@ class agentController():
                 # Reached door in the memory -> means it has been blocked
                 if doorName in self.highLvl.memoryDoors:
                     # Enable exploration probability
-                    self.highLvl.epsilon = 0.35
+                    self.highLvl.epsilon = epsilon
                 else:
                     # All other doors disable exploration
                     self.highLvl.epsilon = 0

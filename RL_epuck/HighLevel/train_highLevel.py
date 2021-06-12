@@ -79,7 +79,7 @@ class agentController():
         nr_episodes = 0
         
         # Select maze
-        maze = 1
+        maze = 2
 
         # Robot Start Positions
         if maze == 1:
@@ -300,29 +300,29 @@ class agentController():
             if end or nr_episodes >= self.highLevel.episodes:
                 break
 
-        print("SAVING Qtable...")
-        self.highLevel.saveQTable(Qtable_name)
-        print("Qtable saved!")
+        # print("SAVING Qtable...")
+        # self.highLevel.saveQTable(Qtable_name)
+        # print("Qtable saved!")
 
-        print("SAVING Visited States...")
-        json.dump(visited_states, open(visitedStates_name, "w+"))
-        print("Visited States saved!")
+        # print("SAVING Visited States...")
+        # json.dump(visited_states, open(visitedStates_name, "w+"))
+        # print("Visited States saved!")
 
-        print("SAVING Steps per episode...")
-        json.dump(paths, open(paths_name, "w+"))
-        print("Steps per episode saved!")
+        # print("SAVING Steps per episode...")
+        # json.dump(paths, open(paths_name, "w+"))
+        # print("Steps per episode saved!")
 
-        print("SAVING Reward Sum...")
-        f = open(rewardSum_name, "w+")
-        for r in rewardSum:
-            f.write(str(r)+"\n")
-        print("Reward Sum saved!")
+        # print("SAVING Reward Sum...")
+        # f = open(rewardSum_name, "w+")
+        # for r in rewardSum:
+        #     f.write(str(r)+"\n")
+        # print("Reward Sum saved!")
 
-        print("SAVING Avg Low Level Time...")
-        f = open(avg_lowLvl_name, "w+")
-        for t in avg_lowLvlTimes:
-            f.write(str(t)+"\n")
-        print("Avg Low Level Time saved!")
+        # print("SAVING Avg Low Level Time...")
+        # f = open(avg_lowLvl_name, "w+")
+        # for t in avg_lowLvlTimes:
+        #     f.write(str(t)+"\n")
+        # print("Avg Low Level Time saved!")
         # Enter here exit cleanup code.
         exit(0)
 
