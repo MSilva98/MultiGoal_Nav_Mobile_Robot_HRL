@@ -126,7 +126,7 @@ class agentController():
                 trajectory.append((cur_pos[0], cur_pos[2]))
             
             # Each timestep check if robot reached goal
-            if self.highLevel.reachedGoal((cur_pos[0], cur_pos[2], cur_ori), finishGoal):
+            if self.highLevel.reachedSpecificGoal((cur_pos[0], cur_pos[2], cur_ori), finishGoal):
                 init_pos += 1
                 # RESET ROBOT
                 if init_pos < 10:
@@ -170,7 +170,7 @@ class agentController():
                 # High Level State
                 highState = self.highLevel.getState((cur_pos[0], cur_pos[2], cur_ori))
                 # Robot in door entrance and facing door
-                if highState != '':
+                if highState != None:
                     highAction = self.highLevel.chooseAction(highState)
                     print("DOOR:", self.highLevel.getDoorName(highState), "S:", highState, "P:", (cur_pos[0], cur_pos[2], cur_ori), "A:", highAction)
                     if highAction == "right":

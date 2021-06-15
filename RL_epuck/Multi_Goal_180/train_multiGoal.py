@@ -119,6 +119,8 @@ class agentController():
         startGoal = 'home1'
         finishGoal = 'gym1' 
 
+        log = open("log.txt", "w+")
+
         while self.robot.step(self.timestep) != -1:    
             # Obtain robot position each timestep
             cur_pos = self.getCurrentPosition()
@@ -137,7 +139,9 @@ class agentController():
                 k = str((startGoal, goalName))
                 statesPath.append((next_highState, "stop"))
 
-                print(statesPath)
+                print("FULL PATH:",statesPath)
+                log.write("\nFULL PATH: " + str(statesPath))
+
                 if k not in paths:
                     paths[k] = statesPath.copy()
                 else:
@@ -177,11 +181,12 @@ class agentController():
                     # Update variable of robot current position
                     cur_pos = self.getCurrentPosition()
                     print("EPISODE ", nr_episodes, "\nGoing from", startGoal, "to", finishGoal)
-                    
+                    log.write("\n\nEPISODE " + str(nr_episodes) + " Going from " + startGoal + " to " + finishGoal)
                 # Found a goal while going from startGoal to finishGoal
                 # Split path between startGoal -> middleGoal -> finishGoal
                 else:
                     print("From", startGoal, "found", goalName, "while training to reach", finishGoal, "\nSaving that info...")                    
+                    log.write("\nFrom " + startGoal + " found " + goalName + " while training to reach " + finishGoal)                    
                     # startGoal will change to middleGoal and start a new path
                     startGoal = goalName
 
@@ -202,10 +207,12 @@ class agentController():
             if next_highState != None:
                 stateName = self.highLvl.getDoorName(next_highState)
                 print("StateName:", stateName, "S:", next_highState, "A:", next_highAction)
+                log.write("\nStateName: " + stateName + " S: " + next_highState + " A: " + next_highAction)
                 
                 r_t = round(self.robot.getTime(), 2)
                 # Every state the agent reaches save pair (state, action) that led to it
                 statesPath.append((next_highState, next_highAction))
+
                 # Updates occur only after executing the first highLevel action (so that cur_state and next_state exist)
                 if not first and last_highAction != None:
                     self.highLvl.updateQTable(last_highState, next_highState, last_highAction, r_t-last_t, finishGoal)

@@ -120,13 +120,15 @@ class Agent():
             # Cases where robot is facing up or down -> x represents corridor width
             if cur_ori < 20 or cur_ori > 160: 
                 for i in range(-7,8):
-                    for l in range(-20, 21):
-                        all_states.append(str((round(x+i/100,2), round(z,2), round(abs(ori+(l*math.pi/180)),1))))
+                    for j in range(-1,2):
+                        for l in range(-20, 21):
+                            all_states.append(str((round(x+i/100,2), round(z+j/100,2), round(abs(ori+(l*math.pi/180)),1))))
             # Cases where robot is facing sides -> z represents corridor width
             elif cur_ori > 70 and cur_ori < 110:
-                for j in range(-7,8):
-                    for l in range(-20, 21):
-                        all_states.append(str((round(x,2), round(z+j/100,2), round(ori+(l*math.pi/180),1))))
+                for i in range(-1,2):
+                    for j in range(-7,8):
+                        for l in range(-20, 21):
+                            all_states.append(str((round(x+i/100,2), round(z+j/100,2), round(ori+(l*math.pi/180),1))))
             # Check if state exists and is not a goal state
             for s in all_states:
                 if s in self.QTable.keys():

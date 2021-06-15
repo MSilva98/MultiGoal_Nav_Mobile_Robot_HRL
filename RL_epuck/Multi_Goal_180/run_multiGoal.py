@@ -91,6 +91,7 @@ class agentController():
         # Path memory to be able to go from goal to goal
         stateActionPairs = self.getPath(self.highLvl.paths, startGoal[:-1], finishGoal[:-1])
         print("PATH:", stateActionPairs)
+        print("Going from", startGoal, "to", finishGoal)
         
         while self.robot.step(self.timestep) != -1:    
             # Obtain robot position each timestep
@@ -297,6 +298,8 @@ class agentController():
             (finish2,start2)
         ]
         
+        startS1 = self.highLvl.getGoalState(start1)
+        startS2 = self.highLvl.getGoalState(start2)
         availablePaths = []
         for key in keys:
             print(key)
@@ -305,6 +308,10 @@ class agentController():
                 newPath = dict()
                 for s in p:
                     newPath[s[0]] = s[1]
+                if startS1 not in newPath:
+                    newPath[startS1] = "back"
+                if startS2 not in newPath:
+                    newPath[startS2] = "back"
                 availablePaths.append(newPath)
 
         for key in keysInv:
@@ -314,7 +321,7 @@ class agentController():
 
         for p in availablePaths:
             print(p)
-            print("\n")
+
         # Return the best path from all available
         return self.bestPath(availablePaths)
 
@@ -325,6 +332,7 @@ class agentController():
         idx = 0
         for p in paths:
             if len(p) < dim:
+                dim = len(p)
                 idx = paths.index(p)
         return paths[idx]
         
