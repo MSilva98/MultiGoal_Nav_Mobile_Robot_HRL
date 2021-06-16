@@ -56,26 +56,9 @@ def plotTrajectories(name):
 
         # Plot trajectories
         plt.plot(xy[0][0],xy[0][1], "r-", label="Trajectory 1")
-        for i in range(1,10):
-          plt.plot(xy[i][0],xy[i][1], "r-")
-        plt.arrow(85, 93, -20, 0, length_includes_head=True,
-          head_width=5, head_length=5, label="Robot Position 1", color="r")
         plt.plot(xy[10][0],xy[10][1], "g-", label="Trajectory 2")
-        for i in range(11,20):
-          plt.plot(xy[i][0],xy[i][1], "g-")
-        plt.arrow(-93, 65, 0, -20, length_includes_head=True,
-          head_width=5, head_length=5, label="Robot Position 2", color="g")
         plt.plot(xy[20][0],xy[20][1], "b-", label="Trajectory 3")
-        for i in range(21,30):
-          plt.plot(xy[i][0],xy[i][1], "b-")
-        plt.arrow(-65, -93, 20, 0, length_includes_head=True,
-          head_width=5, head_length=5, label="Robot Position 3", color="b")
         plt.plot(xy[30][0],xy[30][1], "c-", label="Trajectory 4")
-        for i in range(31,40):
-          plt.plot(xy[i][0],xy[i][1], "c-")
-        plt.arrow(-15, -60, 20, 0, length_includes_head=True,
-          head_width=5, head_length=5, label="Robot Position 4", color="c")
-
         plt.title("Robot trajectory on Maze 1")
         plt.xlabel("Robot X (cm)")
         plt.ylabel("Robot Y (cm)")
@@ -145,19 +128,11 @@ def plotTrajectories(name):
         plt.plot(ey1, ex, "k-", linewidth=3)
 
         # Plot trajectories
-        plt.plot(xy[0][0],xy[0][1], "r-", label="Trajectory 1")
-        for i in range(1,10):
-          plt.plot(xy[i][0],xy[i][1], "r-")
-        plt.plot(xy[10][0],xy[10][1], "g-", label="Trajectory 2")
-        for i in range(11,20):
-          plt.plot(xy[i][0],xy[i][1], "g-")
-        plt.plot(xy[20][0],xy[20][1], "b-", label="Trajectory 3")
-        for i in range(21,30):
-          plt.plot(xy[i][0],xy[i][1], "b-")
-        plt.plot(xy[30][0],xy[30][1], "c-", label="Trajectory 4")
-        for i in range(31,40):
-          plt.plot(xy[i][0],xy[i][1], "c-")
-
+        plt.plot(xy[0][0],xy[0][1], "r-", label="Home-Library")
+        plt.plot(xy[1][0],xy[1][1], "c-", label="Library-Gym")
+        plt.plot(xy[2][0],xy[2][1], "m-", label="Gym-Restaurant")
+        plt.plot(xy[3][0],xy[3][1], "b-", label="Restaurant-Home")
+        
         plt.title("Robot trajectory on Maze 2")
         plt.xlabel("Robot X (cm)")
         plt.ylabel("Robot Y (cm)")

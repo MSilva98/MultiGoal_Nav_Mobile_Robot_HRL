@@ -73,15 +73,11 @@ class agentController():
             self.highLvl = highLvlAgent(epsilon=0, statesFile="./mazes/maze1.txt", paths="MultiGoal_paths_maze1.txt")
         else:
             # MAZE 2
-            # self.highLvl = highLvlAgent(epsilon=0, statesFile="./mazes/maze2.txt", paths="./Other/MultiGoal_paths_maze2_v2600.txt")
             self.highLvl = highLvlAgent(epsilon=0, statesFile="./mazes/maze2.txt", paths="MultiGoal_paths_maze2.txt")
 
         # Set robot intial position
         startGoal = self.highLvl.getRandomGoal()
         finishGoal = self.highLvl.getRandomGoal(startGoal)
-        
-        startGoal = "library1"
-        finishGoal = "restaurant1"
         startState = self.highLvl.getGoalState(startGoal)
         init_pos, init_ori = self.convertStateToWebots(startState)
         self.translation_field.setSFVec3f(init_pos)

@@ -5,26 +5,19 @@
         - distancia do centro do robot à parede é 15 cm
         - distancia do sensor à parede é 12 cm
                     
-    ####################
-    #### CRUZAMENTO ####
-    ####################
+####################
+#### CRUZAMENTO ####
+####################
     - virar a esquerda ou frente
     - virar a direita ou frente
     - virar a esquerda ou direita
     - virar esquerda, direita ou frente -> EVITAR CRUZAMENTO - Mostrar simetria do CRUZAMENTO no trabalho e porque nao foi abordada
 
     ALL Together
-        - v52/QTable_left_all
-        - v52/QTable_right_all
-        - v53/QTable_corridor 
+        - v5/QTable_left_all
+        - v5/QTable_right_all
+        - v5/QTable_corridor 
 
-
-    ####################
-    #### HIGH LEVEL ####
-    ####################
-
-
-Dynamic learning
-    - Faz sentido o nivel de exploração em todas as portas ou apenas nas que ele passou e esta bloqueado??
-        - Ao ter sempre exploração isto não pode ser considerado um "run_agent"... é apenas um updateQTable
-    - Certo nível de exploração necessário para verificar se um novo caminho abriu ou não (e-greedy a 0.1 maybe)
+####################
+#### Multi-goal ####
+####################

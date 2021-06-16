@@ -1,10 +1,11 @@
 #VRML_SIM R2020b utf8
 WorldInfo {
+  basicTimeStep 16
   coordinateSystem "NUE"
 }
 Viewpoint {
   orientation 1 0 0 4.71238898038469
-  position 0.00023556257876283012 5.208522858894209 2.1053110099235298e-06
+  position 0.00023556257876283012 5.447508705497561 2.10531100987963e-06
 }
 TexturedBackground {
 }
@@ -18,7 +19,7 @@ RectangleArena {
   }
 }
 DEF epuck Robot {
-  translation 0.85 0 1.15
+  translation 0.8 0 1.15
   rotation 0 1 0 1.5708
   children [
     GPS {
@@ -86,7 +87,7 @@ DEF epuck Robot {
         }
       ]
       endPoint DEF EPUCK_LEFT_WHEEL Solid {
-        translation -0.026000022282565732 0.019942283634705304 8.977773091255447e-06
+        translation -0.026000022282565274 0.019942283634705304 8.977773091262525e-06
         rotation -1 0 0 0
         children [
           DEF EPUCK_WHEEL Transform {
@@ -237,7 +238,7 @@ DEF epuck Robot {
         }
       ]
       endPoint DEF EPUCK_RIGHT_WHEEL Solid {
-        translation 0.02599997450777386 0.019942185973978052 8.891194498778831e-06
+        translation 0.02599997450777336 0.019942185973978052 8.8911944987577e-06
         rotation -1 0 0 0
         children [
           Transform {

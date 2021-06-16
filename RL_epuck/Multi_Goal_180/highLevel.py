@@ -88,9 +88,6 @@ class Agent():
         return highest_q
 
     def getState(self, state, checkingGoal=False):
-        if str(state) in self.QTable.keys():
-            return str(state)
-
         x,z,ori = state
         # Create all possible combinations within margin
         all_states = []
@@ -98,15 +95,8 @@ class Agent():
         cur_ori = abs(ori)*180/math.pi
         # When checking the goal position consider square area of 6x6
         if checkingGoal:
-            # if cur_ori < 20 or cur_ori > 160: 
-            #     x_m = 7
-            #     y_m = 4
-            # elif cur_ori > 70 and cur_ori < 110:
-            #     x_m = 4
-            #     y_m = 7
-                    
-            # for i in range(-x_m,x_m+1):
-            #     for j in range(-y_m,y_m+1):
+            if str(state) in self.QTable.keys() and str(state) in self.goals.keys():
+                return str(state)
             for i in range(-4,5):
                 for j in range(-4,5):
                     for l in range(-20, 21):
@@ -115,8 +105,9 @@ class Agent():
             for s in all_states:
                 if s in self.QTable.keys() and s in self.goals.keys():
                     return s
-
         else:
+            if str(state) in self.QTable.keys():
+                return str(state)
             # Cases where robot is facing up or down -> x represents corridor width
             if cur_ori < 20 or cur_ori > 160: 
                 for i in range(-7,8):
