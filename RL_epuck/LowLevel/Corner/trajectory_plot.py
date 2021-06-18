@@ -67,11 +67,10 @@ def plotTrajectory(name):
           head_width=5, head_length=5, label="Robot Direction", color="blue")
 
     plt.legend()
-
+    plt.tight_layout()
 
 plotTrajectory("corner_left")
 plotTrajectory("corner_right")
 
 
-plt.tight_layout()
 plt.show()

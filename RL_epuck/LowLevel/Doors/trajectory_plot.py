@@ -123,6 +123,9 @@ def plotTrajectory(name):
         elif name == "door_left_fl_fwd":
             plt.title("Robot trajectory on left door forward")
             plt.gca().invert_xaxis()   
+    
+    plt.tight_layout()
+    
 
 # Trajectory for each door
 plotTrajectory("door_right_fr")
@@ -136,5 +139,4 @@ plotTrajectory("door_left_lr")
 plotTrajectory("doors_trajectory")
 
 plt.legend()
-plt.tight_layout()
 plt.show()

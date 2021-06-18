@@ -1,6 +1,5 @@
 import numpy as np
 import matplotlib.pyplot as plt
-import math
 
 # https://www.limulo.net/website/coding/physical-computing/sharp-linearization.html
 
