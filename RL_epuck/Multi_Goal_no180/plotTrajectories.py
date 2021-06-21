@@ -1,6 +1,8 @@
 import matplotlib.pyplot as plt
 from matplotlib.patches import Rectangle
 
+font_size = 20
+
 def plotTrajectories(name):
     f = open(name+".txt", "r")
     xy = []
@@ -54,14 +56,19 @@ def plotTrajectories(name):
 
         # Plot trajectories
         plt.plot(xy[0][0],xy[0][1], "r-", label="Trajectory 1")
+        plt.plot(xy[1][0],xy[1][1], "g-", label="Trajectory 2")
+        plt.plot(xy[2][0],xy[2][1], "b-", label="Trajectory 3")
+        plt.plot(xy[3][0],xy[3][1], "c-", label="Trajectory 4")
         
-        plt.title("Robot trajectory on Maze 1")
-        plt.xlabel("Robot X (cm)")
-        plt.ylabel("Robot Y (cm)")
-        plt.xlim(-105, 130)
+        plt.title("Robot trajectory on Maze 1", fontsize=font_size)
+        plt.xlabel("Robot X (cm)", fontsize=font_size)
+        plt.ylabel("Robot Y (cm)", fontsize=font_size)
+        plt.xticks(fontsize=font_size)
+        plt.yticks(fontsize=font_size)
+        plt.xlim(-105, 160)
         plt.ylim(-105, 105)
         plt.gca().invert_yaxis()
-        plt.legend(loc="upper right")
+        plt.legend(loc="upper right", fontsize=font_size)
         plt.tight_layout()
     else:
         # Draw Maze
@@ -129,13 +136,15 @@ def plotTrajectories(name):
         plt.plot(xy[2][0],xy[2][1], "m-", label="Gym-Restaurant")
         plt.plot(xy[3][0],xy[3][1], "b-", label="Restaurant-Home")
 
-        plt.title("Robot trajectory on Maze 2")
-        plt.xlabel("Robot X (cm)")
-        plt.ylabel("Robot Y (cm)")
-        plt.xlim(-135, 160)
+        plt.title("Robot trajectory on Maze 2", fontsize=font_size)
+        plt.xlabel("Robot X (cm)", fontsize=font_size)
+        plt.ylabel("Robot Y (cm)", fontsize=font_size)
+        plt.xticks(fontsize=font_size)
+        plt.yticks(fontsize=font_size)
+        plt.xlim(-135, 200)
         plt.ylim(-135, 135)
         plt.gca().invert_yaxis()    
-        plt.legend(loc="upper right")
+        plt.legend(loc="upper right", fontsize=font_size)
         plt.tight_layout()
 
     

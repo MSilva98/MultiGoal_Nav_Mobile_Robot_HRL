@@ -2,6 +2,8 @@ import matplotlib.pyplot as plt
 import json
 import math
 
+font_size = 20
+
 def plotVisitedStates(name):
     f = open(name+".txt", "r")
     visitedStates = json.load(f)
@@ -20,11 +22,13 @@ def plotVisitedStates(name):
     fig = plt.figure()
     plt.bar(x,y)
     if name == "visited_states_maze1":
-        plt.title("Visited states Maze 1")
+        plt.title("Visited states Maze 1", fontsize=font_size)
     else:
-        plt.title("Visited states Maze 2")
-    plt.xlabel("State")
-    plt.ylabel("Number of Visits")
+        plt.title("Visited states Maze 2", fontsize=font_size)
+    plt.xlabel("State", fontsize=font_size)
+    plt.ylabel("Number of Visits", fontsize=font_size)
+    plt.xticks(fontsize=font_size)
+    plt.yticks(fontsize=font_size)
     plt.tight_layout()
 
 def plotAvgLowLvlTimes(name):
@@ -35,9 +39,9 @@ def plotAvgLowLvlTimes(name):
 
     fig = plt.figure()
     if name == "avgLowLvlTimes_maze1":
-        plt.title("Time between High Level States Maze 1")
+        plt.title("Time between High Level States Maze 1", fontsize=font_size)
     else:
-        plt.title("Time between High Level States Maze 2")
+        plt.title("Time between High Level States Maze 2", fontsize=font_size)
     
     split = math.floor(len(times)/4)
     times1 = [times[x] for x in range(split)]
@@ -51,8 +55,10 @@ def plotAvgLowLvlTimes(name):
     plt.plot(times2, marker='o', color="g", label="Starting Position 2")
     plt.plot(times3, marker='o', color="b", label="Starting Position 3")
     plt.plot(times4, marker='o', color="c", label="Starting Position 4")
-    plt.ylabel("Time in Low Level (s)")
-    plt.legend()
+    plt.ylabel("Time in Low Level (s)", fontsize=font_size)
+    plt.xticks(fontsize=font_size)
+    plt.yticks(fontsize=font_size)
+    plt.legend(fontsize=font_size)
     plt.tight_layout()
 
 def plotSteps(name):
@@ -60,10 +66,10 @@ def plotSteps(name):
     paths = json.load(f)
     nrSteps = [len(paths[x]) for x in paths]
     fig = plt.figure()
-    if name == "paths_maze1":
-        plt.title("Steps per episode in Maze 1")
+    if name == "steps_maze1":
+        plt.title("Steps per episode in Maze 1", fontsize=font_size)
     else:
-        plt.title("Steps per episode in Maze 2")
+        plt.title("Steps per episode in Maze 2", fontsize=font_size)
 
     split = math.floor(len(nrSteps)/4)
     nrSteps1 = [nrSteps[x] for x in range(split)]
@@ -77,9 +83,11 @@ def plotSteps(name):
     plt.plot(nrSteps2, marker='o', color="g", label="Starting Position 2")
     plt.plot(nrSteps3, marker='o', color="b", label="Starting Position 3")
     plt.plot(nrSteps4, marker='o', color="c", label="Starting Position 4")
-    plt.xlabel("Number of episodes")
-    plt.ylabel("Number of steps")
-    plt.legend()
+    plt.xlabel("Number of episodes", fontsize=font_size)
+    plt.ylabel("Number of steps", fontsize=font_size)
+    plt.xticks(fontsize=font_size)
+    plt.yticks(fontsize=font_size)
+    plt.legend(fontsize=font_size)
     plt.tight_layout()
 
 def plotRewardSum(name):
@@ -89,9 +97,9 @@ def plotRewardSum(name):
         rwds.append(float(l))
     fig = plt.figure()
     if name == "rwdSum_maze1":
-        plt.title("Reward Sum in Maze 1")
+        plt.title("Reward Sum in Maze 1", fontsize=font_size)
     else:
-        plt.title("Reward Sum in Maze 2")
+        plt.title("Reward Sum in Maze 2", fontsize=font_size)
 
     split = math.floor(len(rwds)/4)
     rwds1 = [rwds[x] for x in range(split)]
@@ -105,9 +113,11 @@ def plotRewardSum(name):
     plt.plot(rwds2, marker='o', color="g", label="Starting Position 2")
     plt.plot(rwds3, marker='o', color="b", label="Starting Position 3")
     plt.plot(rwds4, marker='o', color="c", label="Starting Position 4")
-    plt.xlabel("Number of episodes")
-    plt.ylabel("Reward Sum")
-    plt.legend()
+    plt.xlabel("Number of episodes", fontsize=font_size)
+    plt.ylabel("Reward Sum", fontsize=font_size)
+    plt.xticks(fontsize=font_size)
+    plt.yticks(fontsize=font_size)
+    plt.legend(fontsize=font_size)
     plt.tight_layout()
     
 plotVisitedStates("visited_states_maze1")

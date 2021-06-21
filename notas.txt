@@ -1,23 +1,4 @@
-    
-    NOTAS do epuck
-        - cada sensor esta deslocado 3cm do centro do robot
-        - corredor com 30 cm
-        - distancia do centro do robot à parede é 15 cm
-        - distancia do sensor à parede é 12 cm
-                    
-####################
-#### CRUZAMENTO ####
-####################
-    - virar a esquerda ou frente
-    - virar a direita ou frente
-    - virar a esquerda ou direita
-    - virar esquerda, direita ou frente -> EVITAR CRUZAMENTO - Mostrar simetria do CRUZAMENTO no trabalho e porque nao foi abordada
-
-    ALL Together
-        - v5/QTable_left_all
-        - v5/QTable_right_all
-        - v5/QTable_corridor 
-
-####################
-#### Multi-goal ####
-####################
+- encontrar artigos muito iguais ao nosso
+    - robot a navegar em labirintos/ambientes parecidos usando RL e HRL
+    - multi-goal
+    - dynamic behaviour

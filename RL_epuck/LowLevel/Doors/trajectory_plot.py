@@ -1,6 +1,6 @@
 import matplotlib.pyplot as plt
-import numpy as np
-import json
+
+font_size = 20
 
 def plotTrajectory(name):
     f = open(name+".txt", "r")
@@ -53,12 +53,14 @@ def plotTrajectory(name):
         plt.plot(y15up,x15up, "k-")
         plt.plot(y15down,x15down, "k-")
         plt.plot(x1,ym15, "k-")
-        plt.xlabel("Robot X (cm)")
-        plt.ylabel("Robot Y (cm)")
+        plt.xlabel("Robot X (cm)", fontsize=font_size)
+        plt.ylabel("Robot Y (cm)", fontsize=font_size)
+        plt.xticks(fontsize=font_size)
+        plt.yticks(fontsize=font_size)
         plt.xlim(-101, 101)
-        plt.title("Robot trajectory on doors")
-
+        plt.title("Robot trajectory on doors", fontsize=font_size)
         plt.gca().invert_yaxis()    
+        plt.legend(fontsize=font_size)
     else:
         # Plot one path to create label
         plt.plot(xy[0][0],xy[0][1], "r-", label="Robot path")
@@ -108,6 +110,7 @@ def plotTrajectory(name):
         plt.xlabel("Robot X (cm)")
         plt.ylabel("Robot Y (cm)")
         plt.xlim(-61, 61)
+        plt.legend()
         if name == "door_right_fr" or name == "door_right_lr":
             plt.title("Robot trajectory on door to the right")
             plt.gca().invert_yaxis()    
@@ -138,5 +141,4 @@ plotTrajectory("door_left_lr")
 # Trajectory with all doors combined
 plotTrajectory("doors_trajectory")
 
-plt.legend()
 plt.show()

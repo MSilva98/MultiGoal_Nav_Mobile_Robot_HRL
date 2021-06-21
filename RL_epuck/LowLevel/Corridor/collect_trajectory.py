@@ -25,7 +25,7 @@ class agentController():
         self.initial_rot = self.rotation_field.getSFRotation()
 
         # Robot reinforcement learning brain
-        self.brain = Agent(alpha=0, beta=0, ro=0, epsilon=0, Qtable="QTable_v5_22000h.txt")
+        self.brain = Agent(alpha=0, beta=0, ro=0, epsilon=0, Qtable="QTable_v5_17500h.txt")
 
         # get the time step of the current world.
         self.timestep = 32
