@@ -1,4 +1,4 @@
-# Grid Like Representations and Hierarchical Reinforcement Learning for Robot Navigation
+# Multi-Goal Navigation of a Mobile Robot Using Hierarchical Reinforcement Learning
 Master Dissertation in MIECT - UA - 2020/2021 
 
 ## Compile Thesis
