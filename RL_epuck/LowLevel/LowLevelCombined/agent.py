@@ -78,33 +78,21 @@ class Agent():
                 highest_q = nxt_q
         return highest_q
     
-    def discretizeSensor(self, sensor_val, states_4):
-        if states_4:
-            if sensor_val > 0 and sensor_val < 0.07:
-                return 1
-            elif sensor_val >= 0.07 and sensor_val < 0.13:
-                return 2
-            elif sensor_val >= 0.13 and sensor_val < 0.20:
-                return 3
-            elif sensor_val >= 0.20:
-                return 4
-            else:   # bad sensor value
-                return -1
-        else:
-            if sensor_val > 0 and sensor_val < 0.06:
-                return 1
-            elif sensor_val >= 0.06 and sensor_val < 0.10:
-                return 2
-            elif sensor_val >= 0.10 and sensor_val < 0.15:
-                return 3
-            elif sensor_val >= 0.15 and sensor_val < 0.20:
-                return 4
-            elif sensor_val >= 0.20 and sensor_val < 0.25:
-                return 5
-            elif sensor_val >= 0.25:
-                return 6
-            else:   # bad sensor value
-                return -1
+    def discretizeSensor(self, sensor_val):
+        if sensor_val > 0 and sensor_val < 0.06:
+            return 1
+        elif sensor_val >= 0.06 and sensor_val < 0.10:
+            return 2
+        elif sensor_val >= 0.10 and sensor_val < 0.15:
+            return 3
+        elif sensor_val >= 0.15 and sensor_val < 0.20:
+            return 4
+        elif sensor_val >= 0.20 and sensor_val < 0.25:
+            return 5
+        elif sensor_val >= 0.25:
+            return 6
+        else:   # bad sensor value
+            return -1
     
     def actionToSpeed(self, action):
         if action == "F":
@@ -147,8 +135,8 @@ class Agent():
         
         return d if d <= 0.3 else 0.3
 
-    def sensorsToState(self, sensor_values, sensors_4):
-        return str(tuple([self.discretizeSensor(round(self.sensorVoltageToDistance(v),2),sensors_4) for v in sensor_values]))
+    def sensorsToState(self, sensor_values):
+        return str(tuple([self.discretizeSensor(round(self.sensorVoltageToDistance(v),2)) for v in sensor_values]))
 
     # Instead of having Left and Right tables just use symmetry on the right one to get left actions
     def symmetricState(self, state):
@@ -186,9 +174,9 @@ class Agent():
 
     # sensor_values organized from sharp0 to sharp5
     # [front, front left, left, front right, right, rear]
-    def fillRwdTable(self, sensor_values, pos, ori, prev_state, sensors_4):
+    def fillRwdTable(self, sensor_values, pos, ori, prev_state):
         dists = [round(self.sensorVoltageToDistance(v),2) for v in sensor_values]
-        state = self.sensorsToState(sensor_values, sensors_4)
+        state = self.sensorsToState(sensor_values)
         rwd = round(self.reward(pos[0], ori),4)
         print("POS:", pos[0], pos[2], " ORI:", round(ori*180/math.pi,1), ori, state)
         if prev_state != state:

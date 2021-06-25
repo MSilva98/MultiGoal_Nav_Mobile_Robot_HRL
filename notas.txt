@@ -1,4 +1,10 @@
-- encontrar artigos muito iguais ao nosso
-    - robot a navegar em labirintos/ambientes parecidos usando RL e HRL
-    - multi-goal
-    - dynamic behaviour
+1000 laps
+    Fails turning left: 12  -> 1.2%
+    Fails turning right: 71 -> 7.1%
+    Fails going forward: 0  -> 0.0%
+
+
+justificar que a ANN fica em anexo pq se ia usar para fazer o mapa metrico do ambiente
+
+artigo
+    - 

@@ -176,16 +176,10 @@ class Agent():
         #     return -300*(4*pow(pos,2)+0.05*pow(ori,2))-4    # Penalizes much harder rotations
 
         # # V5
-        # if (pos >= 0 and ori >= 0) or (pos <= 0 and ori <= 0):  # Cases when robot is moving to the center
-        #     return -400*(4*pow(pos,2)+0.02*pow(ori,2))+15
-        # else: # Cases when it is walking away
-        #     return -400*(4*pow(pos,2)+0.03*pow(ori,2))-10
-
-        # V6
         if (pos >= 0 and ori >= 0) or (pos <= 0 and ori <= 0):  # Cases when robot is moving to the center
-            return -400*(10*pow(pos,2)+0.02*pow(ori,2))+15
+            return -400*(4*pow(pos,2)+0.02*pow(ori,2))+15
         else: # Cases when it is walking away
-            return -400*(15*pow(pos,2)+0.03*pow(ori,2))-10
+            return -400*(4*pow(pos,2)+0.03*pow(ori,2))-10
 
     def sensorsToState(self, sensor_values, sensors_4):
         return str(tuple([self.discretizeSensor(round(self.sensorVoltageToDistance(v),2),sensors_4) for v in sensor_values]))
