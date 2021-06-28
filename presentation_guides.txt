@@ -1,0 +1,31 @@
+
+1. Introduction and Problem
+    robot and environment used
+    robot navigation is complex
+    multi-goal makes more sense than single goal
+
+2. Hierarchical Approach
+    hierarchy makes things easier
+        - turns 1 complext into many simple
+    present hierarchy used
+
+2. Low-Level Implementation
+    present each task and robot performance
+    present environments used
+    show video going randomly
+
+3. High-Level Implementation
+    present what high level controls
+    present environments used
+    what else?
+
+4. Dynamic Behaviour
+    explain how it is done
+        - present video of robot doing it
+
+5. Multi-Goal
+    explain algorithm done
+        - present results of robot (environment going between multiple goals with and without 180º)
+
+6. Conclusions
+    final remarks on what has been done
