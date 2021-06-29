@@ -113,26 +113,9 @@ class agentController():
             if self.highLvl.reachedGoal(cur_pos):
                 init_pos += 1
 
-
+                # Demonstration purpose: Use only position 3
                 self.translation_field.setSFVec3f(init_pos3)
                 self.rotation_field.setSFRotation(init_ori3)
-
-                # # RESET ROBOT POSITIONS
-                # if init_pos < 10:
-                #     self.translation_field.setSFVec3f(init_pos1)
-                #     self.rotation_field.setSFRotation(init_ori1)
-                # elif init_pos >= 10 and init_pos < 20:
-                #     self.translation_field.setSFVec3f(init_pos2)
-                #     self.rotation_field.setSFRotation(init_ori2)
-                # elif init_pos >= 20 and init_pos < 30: 
-                #     self.translation_field.setSFVec3f(init_pos3)
-                #     self.rotation_field.setSFRotation(init_ori3)
-                # elif init_pos >= 30 and init_pos < 40:
-                #     self.translation_field.setSFVec3f(init_pos4)
-                #     self.rotation_field.setSFRotation(init_ori4)
-                # else:
-                #     end = True
-                #     break
                 self.robot_node.resetPhysics()
                 print("Start Pos ", init_pos)
 
@@ -152,7 +135,7 @@ class agentController():
                     break
             
             # Get high level action for current position if any
-            highState, highAction = self.getHighLvlAction(cur_pos, 0.5)
+            highState, highAction = self.getHighLvlAction(cur_pos, 0.2)
     
             if highState != None:
                 r_t = round(self.robot.getTime(), 2)

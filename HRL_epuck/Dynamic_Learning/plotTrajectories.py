@@ -171,8 +171,6 @@ def plotTrajectories(name):
         plt.legend(loc="upper right", fontsize=font_size)
         plt.tight_layout()
 
-    
-# plotTrajectories("maze1_trajectory")
 plotTrajectories("maze2_trajectory")
 plotTrajectories("maze2_trajectory_updated")
 

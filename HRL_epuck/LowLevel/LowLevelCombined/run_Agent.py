@@ -22,11 +22,9 @@ class agentController():
         self.rotation_field = self.robot_node.getField("rotation")
 
         # Robot reinforcement learning brain
-        # USING RAW QTables
         # NOTE: epsilon MUST be 0 to disable random actions
         self.frontBrain = Agent(epsilon=0, Qtable="QTable_corridor.txt")  # QTable for corridor and to go forward
         self.rightBrain = Agent(epsilon=0, Qtable="QTable_right_all.txt") # QTable to go right
-        # Symetry can be used instead (which is better computationally?)
         self.leftBrain  = Agent(epsilon=0, Qtable="QTable_left_all.txt")  # QTable to go left
 
         # get the time step of the current world.
@@ -81,7 +79,6 @@ class agentController():
                     break
 
             # Get distances of sensors' voltages
-            # USING RAW TABLES
             F  = self.frontBrain.sensorVoltageToDistance(dsValues[0])  # Front
             FL = self.frontBrain.sensorVoltageToDistance(dsValues[1])  # Front Left
             L  = self.frontBrain.sensorVoltageToDistance(dsValues[2])  # Left
@@ -151,18 +148,11 @@ class agentController():
                 right    = False
                 corridor = True
 
-            # USING RAW QTABLES
             # Current state of the robot
-            state = self.frontBrain.sensorsToState(dsValues, False)        
+            state = self.frontBrain.sensorsToState(dsValues)        
             if left and not right and not front and not corridor:
                 print("Turn Left")
-                action = self.leftBrain.chooseAction(state) # best action in current state
-
-                # Using symmetry
-                # rightState = self.rightBrain.symmetricState(state)
-                # rightAction = self.rightBrain.chooseAction(rightState)
-                # action = self.rightBrain.symmetricAction(rightAction)
-                
+                action = self.leftBrain.chooseAction(state) # best action in current state 
             elif right and not left and not front and not corridor:
                 print("Turn Right")
                 action = self.rightBrain.chooseAction(state)
