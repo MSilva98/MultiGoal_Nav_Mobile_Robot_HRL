@@ -125,7 +125,7 @@ class agentController():
                     print("#################################################")
                     errors += 1
                     self.translation_field.setSFVec3f([-0.11,0,0])
-                    self.rotation_field.setSFRotation([0,1,0,1.57])
+                    self.rotation_field.setSFRotation([0,1,0,1.57])                    
                     self.robot_node.resetPhysics()
                     trajectory.append((-5,-5))
                     # Update robot position
@@ -247,7 +247,7 @@ class agentController():
                     end = True
                     break    
             
-            if end or laps > 1000: # equivalent to 1000 real laps
+            if end or laps > 500: # equivalent to 1000 real laps
                 break
 
         trajectory.append((-5,-5))

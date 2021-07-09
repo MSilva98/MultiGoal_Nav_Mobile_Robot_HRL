@@ -42,10 +42,16 @@ def plotTrajectories(name):
       plt.plot(v[0],v[1], "r-")
 
     if name == "trajectory_front":
+      plt.arrow(0, -93, -20, 0, length_includes_head=True,
+          head_width=5, head_length=5, label="Robot Direction", color="blue")
       plt.title("Robot trajectory on Maze 8 going forward on doors", fontsize=font_size)
     elif name == "trajectory_right":
+      plt.arrow(0, 7, 20, 0, length_includes_head=True,
+          head_width=5, head_length=5, label="Robot Direction", color="blue")
       plt.title("Robot trajectory on Maze 8 going right on doors", fontsize=font_size)
     elif name == "trajectory_left":
+      plt.arrow(0, 7, -20, 0, length_includes_head=True,
+          head_width=5, head_length=5, label="Robot Direction", color="blue")
       plt.title("Robot trajectory on Maze 8 going left on doors", fontsize=font_size)
     
     plt.xlabel("Robot X (cm)", fontsize=font_size)
@@ -56,7 +62,7 @@ def plotTrajectories(name):
     plt.ylim(-105, 105)
     plt.gca().invert_yaxis()
     plt.legend(loc="upper right", fontsize=font_size)
-    plt.tight_layout()
+    # plt.tight_layout()
 
     
 plotTrajectories("trajectory_front")

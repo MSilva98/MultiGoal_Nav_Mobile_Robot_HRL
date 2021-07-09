@@ -1,0 +1,5 @@
+500 laps
+    Fails turning left: 4  -> 0.8%
+    Fails turning right: 35 -> 7.0%
+    Fails going forward: 0  -> 0.0%
+
