@@ -63,8 +63,7 @@ class fill_QTable():
         rot_vals = [x*math.pi/180 for x in range(-180,181)]
         
         # Load corridor QTable
-        # f = open("../Corridor/QTable_v5_6s_4epsilon_6500h.txt", "r")
-        f = open("../Corridor/QTable_v5_17500h_corrected.txt", "r")
+        f = open("../Corridor/QTable_corridor.txt", "r")
         corridorQTable = json.load(f)
 
         f2 = open("QTABLE_LOG.txt", "w+")

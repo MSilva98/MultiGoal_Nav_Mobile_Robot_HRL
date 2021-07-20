@@ -21,13 +21,14 @@ def plotVisitedStates(name):
 
     fig = plt.figure()
     plt.bar(x,y)
-    if name == "visited_states_maze1":
-        plt.title("Visited states Maze 1", fontsize=font_size)
-    else:
-        plt.title("Visited states Maze 2", fontsize=font_size)
+    # if name == "visited_states_maze1":
+    #     plt.title("Visited states Maze 1", fontsize=font_size)
+    # else:
+    #     plt.title("Visited states Maze 2", fontsize=font_size)
+
     plt.xlabel("State", fontsize=font_size)
     plt.ylabel("Number of Visits", fontsize=font_size)
-    plt.xticks(fontsize=font_size)
+    plt.xticks(fontsize=font_size, rotation=60)
     plt.yticks(fontsize=font_size)
     plt.tight_layout()
 
@@ -38,10 +39,10 @@ def plotAvgLowLvlTimes(name):
         times.append(float(l))
 
     fig = plt.figure()
-    if name == "avgLowLvlTimes_maze1":
-        plt.title("Time between High Level States Maze 1", fontsize=font_size)
-    else:
-        plt.title("Time between High Level States Maze 2", fontsize=font_size)
+    # if name == "avgLowLvlTimes_maze1":
+    #     plt.title("Time between High Level States Maze 1", fontsize=font_size)
+    # else:
+    #     plt.title("Time between High Level States Maze 2", fontsize=font_size)
     
     split = math.floor(len(times)/4)
     times1 = [times[x] for x in range(split)]
@@ -66,10 +67,10 @@ def plotSteps(name):
     paths = json.load(f)
     nrSteps = [len(paths[x]) for x in paths]
     fig = plt.figure()
-    if name == "steps_maze1":
-        plt.title("Steps per episode in Maze 1", fontsize=font_size)
-    else:
-        plt.title("Steps per episode in Maze 2", fontsize=font_size)
+    # if name == "steps_maze1":
+    #     plt.title("Steps per episode in Maze 1", fontsize=font_size)
+    # else:
+    #     plt.title("Steps per episode in Maze 2", fontsize=font_size)
 
     split = math.floor(len(nrSteps)/4)
     nrSteps1 = [nrSteps[x] for x in range(split)]
@@ -96,10 +97,10 @@ def plotRewardSum(name):
     for l in f:
         rwds.append(float(l))
     fig = plt.figure()
-    if name == "rwdSum_maze1":
-        plt.title("Reward Sum in Maze 1", fontsize=font_size)
-    else:
-        plt.title("Reward Sum in Maze 2", fontsize=font_size)
+    # if name == "rwdSum_maze1":
+    #     plt.title("Reward Sum in Maze 1", fontsize=font_size)
+    # else:
+    #     plt.title("Reward Sum in Maze 2", fontsize=font_size)
 
     split = math.floor(len(rwds)/4)
     rwds1 = [rwds[x] for x in range(split)]
@@ -121,12 +122,12 @@ def plotRewardSum(name):
     plt.tight_layout()
     
 plotVisitedStates("visited_states_maze1")
-plotAvgLowLvlTimes("avgLowLvlTimes_maze1")
+# plotAvgLowLvlTimes("avgLowLvlTimes_maze1")
 plotSteps("steps_maze1")
 plotRewardSum("rwdSum_maze1")
 
 plotVisitedStates("visited_states_maze2")
-plotAvgLowLvlTimes("avgLowLvlTimes_maze2")
+# plotAvgLowLvlTimes("avgLowLvlTimes_maze2")
 plotSteps("steps_maze2")
 plotRewardSum("rwdSum_maze2")
 

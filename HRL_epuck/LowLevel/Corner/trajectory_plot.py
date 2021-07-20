@@ -57,20 +57,20 @@ def plotTrajectory(name):
     plt.ylabel("Robot Y (cm)")
     plt.xlim(-105, 105)
     plt.ylim(-105, 105)
-    if name == "corner_right" or name == "corner_right_17500_all":
+    if name == "corner_right_rwd" or name == "corner_right_corridor":
         plt.title("Robot trajectory on corner to the right")    
-        plt.arrow(0, 93, 20, 0, length_includes_head=True,
+        plt.arrow(-93, 0, 0, -20, length_includes_head=True,
           head_width=5, head_length=5, label="Robot Direction", color="blue")
-    elif name == "corner_left" or name == "corner_left_17500_all":
+    elif name == "corner_left_rwd" or name == "corner_left_corridor":
         plt.title("Robot trajectory on corner to the left")
-        plt.arrow(0, 93, -20, 0, length_includes_head=True,
+        plt.arrow(-93, 0, 0, 20, length_includes_head=True,
           head_width=5, head_length=5, label="Robot Direction", color="blue")
 
+    plt.gca().invert_yaxis()
     plt.legend()
     plt.tight_layout()
 
-plotTrajectory("corner_left")
-plotTrajectory("corner_right")
-
+plotTrajectory("corner_left_corridor")
+plotTrajectory("corner_right_corridor")
 
 plt.show()

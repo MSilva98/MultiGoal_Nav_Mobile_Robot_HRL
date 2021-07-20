@@ -136,7 +136,7 @@ def plotTrajectories(name):
         plt.plot(xy[2][0],xy[2][1], "m-", label="Gym-Restaurant")
         plt.plot(xy[3][0],xy[3][1], "g-", label="Restaurant-Home")
 
-        plt.title("Robot trajectory on Maze 2", fontsize=font_size)
+        # plt.title("Robot trajectory on Maze 2", fontsize=font_size)
         plt.xlabel("Robot X (cm)", fontsize=font_size)
         plt.ylabel("Robot Y (cm)", fontsize=font_size)
         plt.xticks(fontsize=font_size)

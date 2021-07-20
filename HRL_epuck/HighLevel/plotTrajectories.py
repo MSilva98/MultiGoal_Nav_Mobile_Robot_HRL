@@ -59,24 +59,23 @@ def plotTrajectories(name):
         for i in range(1,10):
           plt.plot(xy[i][0],xy[i][1], "r-")
         plt.arrow(85, 93, -20, 0, length_includes_head=True,
-          head_width=5, head_length=5, label="Robot Position 1", color="r")
+          head_width=5, head_length=5, color="r")
         plt.plot(xy[10][0],xy[10][1], "g-", label="Trajectory 2")
         for i in range(11,20):
           plt.plot(xy[i][0],xy[i][1], "g-")
         plt.arrow(-93, 65, 0, -20, length_includes_head=True,
-          head_width=5, head_length=5, label="Robot Position 2", color="g")
+          head_width=5, head_length=5, color="g")
         plt.plot(xy[20][0],xy[20][1], "b-", label="Trajectory 3")
         for i in range(21,30):
           plt.plot(xy[i][0],xy[i][1], "b-")
         plt.arrow(-65, -93, 20, 0, length_includes_head=True,
-          head_width=5, head_length=5, label="Robot Position 3", color="b")
+          head_width=5, head_length=5, color="b")
         plt.plot(xy[30][0],xy[30][1], "c-", label="Trajectory 4")
         for i in range(31,40):
           plt.plot(xy[i][0],xy[i][1], "c-")
         plt.arrow(-15, -60, 20, 0, length_includes_head=True,
-          head_width=5, head_length=5, label="Robot Position 4", color="c")
+          head_width=5, head_length=5, color="c")
 
-        plt.title("Robot trajectory on Maze 1", fontsize=font_size)
         plt.xlabel("Robot X (cm)", fontsize=font_size)
         plt.ylabel("Robot Y (cm)", fontsize=font_size)
         plt.xticks(fontsize=font_size)
@@ -139,24 +138,23 @@ def plotTrajectories(name):
         for i in range(1,10):
           plt.plot(xy[i][0],xy[i][1], "r-")
         plt.arrow(85, 120, -20, 0, length_includes_head=True,
-          head_width=5, head_length=5, label="Robot Position 1", color="r")
+          head_width=5, head_length=5, color="r")
         plt.plot(xy[10][0],xy[10][1], "g-", label="Trajectory 2")
         for i in range(11,20):
           plt.plot(xy[i][0],xy[i][1], "g-")
         plt.arrow(-120, 60, 0, -20, length_includes_head=True,
-          head_width=5, head_length=5, label="Robot Position 2", color="g")
+          head_width=5, head_length=5, color="g")
         plt.plot(xy[20][0],xy[20][1], "b-", label="Trajectory 3")
         for i in range(21,30):
           plt.plot(xy[i][0],xy[i][1], "b-")
         plt.arrow(-70, -120, 20, 0, length_includes_head=True,
-          head_width=5, head_length=5, label="Robot Position 3", color="b")
+          head_width=5, head_length=5, color="b")
         plt.plot(xy[30][0],xy[30][1], "c-", label="Trajectory 4")
         for i in range(31,40):
           plt.plot(xy[i][0],xy[i][1], "c-")
         plt.arrow(120, -75, 0, 20, length_includes_head=True,
-          head_width=5, head_length=5, label="Robot Position 4", color="c")
+          head_width=5, head_length=5, color="c")
 
-        plt.title("Robot trajectory on Maze 2", fontsize=font_size)
         plt.xlabel("Robot X (cm)", fontsize=font_size)
         plt.ylabel("Robot Y (cm)", fontsize=font_size)
         plt.xticks(fontsize=font_size)

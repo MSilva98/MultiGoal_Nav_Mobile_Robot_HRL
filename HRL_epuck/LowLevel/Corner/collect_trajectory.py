@@ -4,17 +4,14 @@
 # You may need to import some classes of the controller module. Ex:
 from controller import Robot, Motor, DistanceSensor, Supervisor
 import numpy as np
-import time
-import math
 from agent import Agent
-import json
 
 # print without scientific notation
 np.set_printoptions(suppress=True)
 
 class agentController():
     def __init__(self):
-        # create supervisor instance (Set of fucorrected_v5_6s_4e_5000h_oncenctions available for each robot node)
+        # create supervisor instance
         self.robot = Supervisor()
         # node to use Supervisor functions
         self.robot_node = self.robot.getFromDef("epuck")
@@ -23,15 +20,13 @@ class agentController():
         
         # Robot reinforcement learning brain
         # NOTE: epsilon MUST be 0 to disable random actions
-        # self.leftCorner  = Agent(epsilon=0, Qtable="QTable_corner_left_sym_corrected.txt")  # QTable to go left on corner
-        # self.rightCorner = Agent(epsilon=0, Qtable="QTable_corner_right_corrected.txt")     # QTable to go right on corner
+        self.corridor    = Agent(epsilon=0, Qtable="QTable_corridor.txt")
+        self.leftCorner  = Agent(epsilon=0, Qtable="QTable_corner_left_corridor_transform.txt")  # QTable to go left on corner
+        self.rightCorner = Agent(epsilon=0, Qtable="QTable_corner_right_corridor_transform.txt")     # QTable to go right on corner
 
-        # self.leftCorner  = Agent(epsilon=0, Qtable="QTable_corner_v5_17500h_left_sym.txt")  # QTable to go left on corner
-        # self.rightCorner = Agent(epsilon=0, Qtable="QTable_corner_v5_17500h_right.txt")     # QTable to go right on corner
-
-        self.corridor    = Agent(epsilon=0, Qtable="../Doors/v52/QTable_v5_17500h_FR_Front_v2.txt")
-        self.leftCorner  = Agent(epsilon=0, Qtable="../Doors/v52/QTable_left_all.txt")  # QTable to go left on corner
-        self.rightCorner = Agent(epsilon=0, Qtable="../Doors/v52/QTable_right_all.txt")     # QTable to go right on corner
+        # Table obtained with reward and training (not working)
+        self.leftCorner = Agent(epsilon=0, Qtable="QTable_corner_trained.txt")     # QTable to go right on corner
+        self.rightCorner = Agent(epsilon=0, Qtable="QTable_corner_trained.txt")     # QTable to go right on corner
 
 
         # get the time step of the current world.
@@ -82,10 +77,11 @@ class agentController():
             t = self.robot.getTime()
             # Everytime the robot reaches the corridor after the corner its position is reseted
 
-            if last_t >= 3600 and rightC:
-                rightC = False
+            # if last_t >= 3600 and rightC:
+            if not rightC:
+                rightC = True
                 self.translation_field.setSFVec3f([-0.85,0,0])
-                self.rotation_field.setSFRotation([0,1,0,1.57])
+                self.rotation_field.setSFRotation([0,1,0,3.14])
                 self.robot_node.resetPhysics()
                 
             elif round(t,0) - last_t >= 1:
@@ -173,10 +169,10 @@ class agentController():
                 f.write(str(p) + "\n")
         print("DOOR RIGHT SAVED!")
 
-        with open("corner_left.txt", "w+") as f:
-            for p in all_pos_left:
-                f.write(str(p) + "\n")
-        print("DOOR LEFT SAVED!")
+        # with open("corner_left.txt", "w+") as f:
+        #     for p in all_pos_left:
+        #         f.write(str(p) + "\n")
+        # print("DOOR LEFT SAVED!")
 
         # Enter here exit cleanup code.
         exit(0)
