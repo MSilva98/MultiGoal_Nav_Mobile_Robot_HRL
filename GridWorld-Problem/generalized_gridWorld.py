@@ -309,18 +309,6 @@ class Agent():
                 newPos = tmpPos.pop(newIndex)
                 self.game.setAgentPos(newPos)
 
-                # # In the last episodes the agent will be in exploitation mode only
-                # if self.episodes > len(self.game.availablePos):
-                #     if r == self.episodes-len(self.game.availablePos):
-                #         self.epsilon = 0
-                # else:
-                #     if r == self.episodes*0.9:
-                #         self.epsilon = 0
-
-                # # After 30% of the episodes the exploration probability decreases to 10%
-                # if r == self.episodes*0.3:
-                #     self.epsilon = 0.1
-
                 r += 1
                 if r < self.episodes:
                     self.reset()
